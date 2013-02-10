@@ -101,7 +101,16 @@ let find_label =
 let find_class =
   find_component Env.lookup_class (fun lid -> Unbound_class lid)
 let find_value =
-  find_component Env.lookup_value (fun lid -> Unbound_value lid)
+  let path = Path.Pident (Ident.create "*type-error*") in
+  let fallback () =
+    let ty = {
+      val_type = { desc = Tunivar None; level = Btype.generic_level; id = -2 };
+      val_kind = Val_reg;
+      val_loc = Location.none
+    } in
+    path, ty
+  in
+  find_component ~fallback Env.lookup_value (fun lid -> Unbound_value lid)
 let find_module =
   find_component Env.lookup_module (fun lid -> Unbound_module lid)
 let find_modtype =
