@@ -104,7 +104,7 @@ let find_value =
   let path = Path.Pident (Ident.create "*type-error*") in
   let fallback () =
     let ty = {
-      val_type = { desc = Tunivar None; level = Btype.generic_level; id = -2 };
+      val_type = { desc = Tvar None; level = Btype.generic_level; id = -2 };
       val_kind = Val_reg;
       val_loc = Location.none
     } in
