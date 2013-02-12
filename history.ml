@@ -17,7 +17,7 @@ let prev = function
   | _ -> None
 
 let prevs { prev } = prev
- 
+
 let next = function
   | { next = n :: _ } -> Some n
   | _ -> None
@@ -26,7 +26,7 @@ let nexts { next } = next
 
 type offset = int
 let offset { pos } = pos
-  
+
 let move amount h =
   let rec shift count lx ly =
     match count, lx, ly with
@@ -37,10 +37,10 @@ let move amount h =
   let diff, prev, next = shift amount h.prev h.next in
   let moved = amount - diff in
   { prev ; next ; pos = h.pos + moved }
-  
+
 let seek_offset offset h =
   move (offset - h.pos) h
-    
+
 
 let forward = function
   | { prev ; next = n :: ns ; pos } ->
@@ -109,7 +109,7 @@ let wrap_lexer ?(filter=fun _-> true) ?bufpos r f buf =
           | Some p -> buf.Lexing.lex_curr_p <- !p
           | None -> ());
         let t = f buf in
-        if filter t then 
+        if filter t then
           r := insert (t,buf.Lexing.lex_start_p,buf.Lexing.lex_curr_p) !r;
         (match bufpos with
           | Some p -> p := buf.Lexing.lex_curr_p;
@@ -131,18 +131,18 @@ type 'a sync = (int * 'a) option
 module Sync =
 struct
   let origin = None
-  
+
   let (>>=) = function
     | None   -> fun _ -> None
     | Some a -> fun f -> f a
-  
+
   let at h =
     prev h >>= fun a -> Some (offset h, a)
-  
+
   let item = function
     | None -> None
     | Some (_,a) -> Some a
-  
+
   let rec nearest f ah bh =
     let point = prev bh >>= f in
     let found = point >>=
@@ -155,7 +155,7 @@ struct
     match found with
       | Some a -> a
       | None   -> seek_offset 0 ah, seek_offset 0 bh
-  
+
   let rec rewind f ah bh =
     let point = prev bh >>= f in
     let found = point >>=
@@ -171,7 +171,7 @@ struct
     match found with
       | Some a -> a
       | None   -> seek_offset 0 ah, seek_offset 0 bh
-  
+
   let right f ah bh =
     let off = offset ah in
     let rec loop bh =
@@ -189,7 +189,7 @@ struct
     match backward bh with
       | Some (_,bh') -> loop bh'
       | None -> loop bh
-  
+
   let left f ah bh =
     let off =
       match prev bh >>= f with
