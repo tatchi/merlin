@@ -63,7 +63,7 @@ function! merlin#RawCommand(...)
 endfunction
 
 function! merlin#TypeOf(expr)
-  py merlin.vim_type_expr_cursor(vim.eval("a:expr"))
+  py merlin.vim_type_expr_cursor(vim.eval("a:expr"), fallback=True)
 endfunction
 
 function! merlin#TypeOfSel()
@@ -133,7 +133,7 @@ function! merlin#Register()
   command! -buffer -nargs=0 ReloadBuffer call merlin#ReloadBuffer()
   command! -buffer -complete=custom,merlin#PackageList -nargs=* Use call merlin#Use(<f-args>)
   setlocal omnifunc=merlin#Complete
-  map <buffer> <LocalLeader>t :TypeCursor<return>
+  map <buffer> <LocalLeader>t :TypeOf<return>
   vmap <buffer> <LocalLeader>t :TypeOfSel<return>
 endfunction
 

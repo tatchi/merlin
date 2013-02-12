@@ -307,15 +307,6 @@ def vim_type_expr(expr):
   except Error as e:
     print ("error : " + e.value['message'])
 
-def vim_type_expr_cursor(expr):
-  to_line, to_col = vim.current.window.cursor
-  sync_buffer()
-  try:
-    ty = send_command("type", "expression", expr, "at", {'line':to_line,'col':to_col})
-    print (ty)
-  except Error as e:
-    print ("error : " + e.value['message'])
-
 def vim_type_cursor():
   to_line, to_col = vim.current.window.cursor
   sync_buffer()
@@ -324,6 +315,18 @@ def vim_type_cursor():
     print (ty)
   except Error as e:
     print ("error : " + e.value['message'])
+
+def vim_type_expr_cursor(expr,fallback=False):
+  to_line, to_col = vim.current.window.cursor
+  sync_buffer()
+  try:
+    ty = send_command("type", "expression", expr, "at", {'line':to_line,'col':to_col})
+    print (ty)
+  except Error as e:
+    if fallback:
+      vim_type_cursor()
+    else:
+      print ("error : " + e.value['message'])
 
 # Resubmit current buffer
 def vim_reload_buffer():
