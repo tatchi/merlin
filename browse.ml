@@ -160,8 +160,14 @@ struct
 
   and pattern expr env { pat_loc } = singleton ~kind:(Expr expr.exp_type) pat_loc env
 
-  and expression { exp_desc ; exp_loc ; exp_type ; exp_env } =
-    T (exp_loc, exp_env, (Expr exp_type), lazy (expression_desc exp_desc))
+  and expression_extra t = function
+    | (Texp_open (_,_,e),l) -> T (l, e, Other, lazy [t])
+    | _ -> t
+
+  and expression { exp_desc ; exp_loc ; exp_extra ; exp_type ; exp_env } =
+    List.fold_left expression_extra
+      (T (exp_loc, exp_env, (Expr exp_type), lazy (expression_desc exp_desc)))
+      exp_extra
 
   and expression_desc = function
     | Texp_ident (_,_,_) -> []
