@@ -17,3 +17,4 @@ DONE Traverse parse tree to find node nearest to a given location
 - Rework handling of errors and warnings
 - Editor integration : allow to retrieve definition boundary to improve synchronisation
 - Wrap Btype snapshot system to prevent monomorphic variable instantiations
+- Use inotify to detect cmi changes.

@@ -185,6 +185,11 @@ If the timer is zero or negative, nothing is done."
 	   (append (elt (merlin-send-command "dump" '("env")) 1) nil))
   (merlin-seek merlin-lock-point))
 
+(defun merlin-refresh ()
+  "Refreshes merlin cmis"
+  (interactive)
+  (merlin-send-command "refresh" nil))
+
 (defun merlin-get-completion (ident)
   "Returns the completion for ident `ident'"
   (merlin-send-command "complete" (list "prefix" ident "at" (merlin-unmake-point (point)))))
@@ -231,10 +236,10 @@ If the timer is zero or negative, nothing is done."
   (interactive)
   (if merlin-pending-errors
       (let ((err (pop merlin-pending-errors)))
-        (message "The error is: %s" err)
         (goto-char (merlin-make-point (cdr (assoc 'start err))))
         (merlin-error-highlight (merlin-make-point (cdr (assoc 'start err)))
                                 (merlin-make-point (cdr (assoc 'end err))))
+        (setq merlin-idle-point (point))
         (message (cdr (assoc 'message err))))
     (message "no more errors")))
 
@@ -281,12 +286,13 @@ If the timer is zero or negative, nothing is done."
                      overlay)) errors))
   (message "(pending error, use C-c C-x to jump)"))
 
-(defun merlin-view-errors ()
+(defun merlin-view-errors (view-errors-p)
   "View the errors of the data that have been fed to merlin"
   (let ((output (merlin-send-command "errors" nil)))
     (if (> (length (elt output 1)) 0)
 	(progn
-	  (merlin-handle-errors (elt output 1))
+          (if view-errors-p
+              (merlin-handle-errors (elt output 1)))
 	  nil)
       (progn
 	(message "ok")
@@ -303,7 +309,7 @@ If the timer is zero or negative, nothing is done."
   (setq merlin-overlay (make-overlay (point-min) merlin-lock-point))
   (overlay-put merlin-overlay 'face 'merlin-locked-face))
 
-(defun merlin-update-point (point)
+(defun merlin-update-point (point view-errors-p)
   "Moves the merlin point to the given point. This functions compares its arguments
 with the current position where merlin stops. It updates the merlin state by doing two things:
 - either retract merlin's knowledge if `point' < `merlin-lock-point'
@@ -312,7 +318,7 @@ with the current position where merlin stops. It updates the merlin state by doi
   (setq merlin-lock-point (merlin-retract-to point))
   (merlin-tell-piece-split "struct" merlin-lock-point point)
   (merlin-flush-tell)
-  (if (merlin-view-errors)
+  (if (merlin-view-errors view-errors-p)
       (setq merlin-lock-point point)
     (let ((msg (current-message)))
       (setq merlin-lock-point (merlin-seek merlin-lock-point))
@@ -320,20 +326,20 @@ with the current position where merlin stops. It updates the merlin state by doi
   (merlin-update-overlay)
 )    
   
-(defun merlin-point ()
+(defun merlin-point (view-errors-p)
   "Tell merlin the lines up to the current point"
   (interactive)
-  (merlin-update-point (point))
+  (merlin-update-point (point) view-errors-p)
 )
 (defun merlin-check-synchronize ()
   "If merlin point is before the end of line send everything up to the end of line"
   (interactive)
   (if (> (point-at-eol) merlin-lock-point)
-      (merlin-update-point (point-at-eol))))
+      (merlin-update-point (point-at-eol) nil)))
 
 (defun merlin-edit (start end length)
   (if (< start merlin-lock-point)
-      (merlin-update-point start)))
+      (merlin-update-point start nil)))
 ;; COMPLETION
 (defun merlin-extract-complete (prefix l)
   "Parses and format completion results"
@@ -356,7 +362,6 @@ with the current position where merlin stops. It updates the merlin state by doi
 	  (delete-region (point) endpoint))
         ;; workaround for merlin-enter
         (merlin-check-synchronize))))
-)
 
 
     
@@ -490,18 +495,25 @@ and if it fails, it uses `merlin-type-of-expression-global'"
 	  (setq merlin-idle-point (point))))))
 
 (defun merlin-enter ()
+  "Tries to update the merlin point and fail silently"
   (interactive)
   (newline)
   (if merlin-continuous-feed
-      (merlin-point)))
+      (merlin-point nil))) 
+(defun merlin-to-point ()
+  "Updates the merlin to the current point, reporting error"
+  (interactive)
+  (merlin-point t))
+
 ;; Mode definition
 (defvar merlin-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c <C-return>") 'merlin-point)
+    (define-key map (kbd "C-c <C-return>") 'merlin-to-point)
     (define-key map (kbd "C-c C-t") 'merlin-show-type-of-point)
     (define-key map (kbd "C-c l") 'merlin-use)
     (define-key map (kbd "C-c C-x") 'merlin-next-error)
     (define-key map (kbd "C-c C-r") 'merlin-rewind)
+    (define-key map (kbd "C-c C-u") 'merlin-refresh)
     (define-key map (kbd "RET") 'merlin-enter)
     map
     ))
@@ -547,3 +559,6 @@ and if it fails, it uses `merlin-type-of-expression-global'"
       (merlin-delete-error-overlays)
       (kill-buffer (merlin-make-buffer-name))
 )))
+
+
+(provide 'merlin)

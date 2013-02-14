@@ -3,15 +3,17 @@ include Makefile.config
 TARGET = ocamlmerlin.native
 
 DISTNAME = ocamlmerlin-0.1
-DISTFILES = configure Makefile README _tags vim $(wildcard *.ml *.mli *.mly *.mll)
+DISTFILES = configure Makefile README _tags vim emacs $(wildcard *.ml *.mli *.mly *.mll)
 
 OCAMLBUILD=ocamlbuild -Is .,typing,parsing,utils
 OCAMLFIND=ocamlfind
 
 all: $(TARGET)
-	
-$(TARGET): fake-ocamlbuild
+
+$(TARGET):
 	$(OCAMLBUILD) -use-ocamlfind $@
+
+.PHONY: $(TARGET) all clean dist distclean install uninstall
 
 clean:
 	$(OCAMLBUILD) -clean
@@ -25,16 +27,14 @@ dist:
 distclean: clean
 	rm -f Makefile.config $(DISTNAME).tar.gz
 
-fake-ocamlbuild:
-	mkdir -p _build/
-	for cmi in $(FAKE_CMI); do ln -sf $$($(OCAMLFIND) query compiler-libs.bytecomp)/$$cmi.cmi _build/ ; done
-
-
 install: $(TARGET)
+	install -dv $(BIN_DIR)
 	install $(TARGET) $(BIN_DIR)/ocamlmerlin
 	install -dv $(SHARE_DIR)/ocamlmerlin/vim
-	for file in vim/*; do install $$file $(SHARE_DIR)/ocamlmerlin/vim ; done
-	@echo "Consult $(SHARE_DIR)/ocamlmerlin/vim/merlin.conf.vim to setup vim mode."
+	install -dv $(SHARE_DIR)/emacs/site-lisp
+	install -m 644 emacs/merlin.el $(SHARE_DIR)/emacs/site-lisp/merlin.el
+	cp -R vim/ $(SHARE_DIR)/ocamlmerlin/vim
+	@echo "Consult $(SHARE_DIR)/ocamlmerlin/vim/plugin/merlin.vim to setup vim mode."
 
 uninstall:
-	rm -rf $(SHARE_DIR)/ocamlmerlin
+	rm -rf $(SHARE_DIR)/ocamlmerlin $(BIN_DIR)/ocamlmerlin $(SHARE_DIR)/emacs/site-lisp/merlin.el
