@@ -22,7 +22,7 @@
 
 open Format
 
-type t = Warnings.loc = {
+type t = Utils.Warnings.loc = {
   loc_start: Lexing.position;
   loc_end: Lexing.position;
   loc_ghost: bool;
@@ -180,27 +180,27 @@ val default_report_printer: unit -> report_printer
 
 (** {2 Converting a [Warnings.t] into a [report]} *)
 
-val report_warning: t -> Warnings.t -> report option
+val report_warning: t -> Utils.Warnings.t -> report option
 (** [report_warning loc w] produces a report for the given warning [w], or
    [None] if the warning is not to be printed. *)
 
-val warning_reporter: (t -> Warnings.t -> report option) ref
+val warning_reporter: (t -> Utils.Warnings.t -> report option) ref
 (** Hook for intercepting warnings. *)
 
-val default_warning_reporter: t -> Warnings.t -> report option
+val default_warning_reporter: t -> Utils.Warnings.t -> report option
 (** Original warning reporter for use in hooks. *)
 
 (** {2 Printing warnings} *)
 
 val formatter_for_warnings : formatter ref
 
-val print_warning: t -> formatter -> Warnings.t -> unit
+val print_warning: t -> formatter -> Utils.Warnings.t -> unit
 (** Prints a warning. This is simply the composition of [report_warning] and
    [print_report]. *)
 
-val prerr_warning_ref: (t -> Warnings.t -> unit) ref
+val prerr_warning_ref: (t -> Utils.Warnings.t -> unit) ref
 
-val prerr_warning: t -> Warnings.t -> unit
+val prerr_warning: t -> Utils.Warnings.t -> unit
 (** Same as [print_warning], but uses [!formatter_for_warnings] as output
    formatter. *)
 
@@ -208,25 +208,25 @@ val prerr_warning: t -> Warnings.t -> unit
 
 (** {2 Converting an [Alert.t] into a [report]} *)
 
-val report_alert: t -> Warnings.alert -> report option
+val report_alert: t -> Utils.Warnings.alert -> report option
 (** [report_alert loc w] produces a report for the given alert [w], or
    [None] if the alert is not to be printed. *)
 
-val alert_reporter: (t -> Warnings.alert -> report option) ref
+val alert_reporter: (t -> Utils.Warnings.alert -> report option) ref
 (** Hook for intercepting alerts. *)
 
-val default_alert_reporter: t -> Warnings.alert -> report option
+val default_alert_reporter: t -> Utils.Warnings.alert -> report option
 (** Original alert reporter for use in hooks. *)
 
 (** {2 Printing alerts} *)
 
-val print_alert: t -> formatter -> Warnings.alert -> unit
+val print_alert: t -> formatter -> Utils.Warnings.alert -> unit
 (** Prints an alert. This is simply the composition of [report_alert] and
    [print_report]. *)
 
-val prerr_alert_ref: (t -> Warnings.alert -> unit) ref
+val prerr_alert_ref: (t -> Utils.Warnings.alert -> unit) ref
 
-val prerr_alert: t -> Warnings.alert -> unit
+val prerr_alert: t -> Utils.Warnings.alert -> unit
 (** Same as [print_alert], but uses [!formatter_for_warnings] as output
    formatter. *)
 

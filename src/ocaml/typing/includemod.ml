@@ -859,7 +859,7 @@ let include_err ppf (cxt, env, err) =
 
 let buffer = ref Bytes.empty
 let is_big obj =
-  let size = !Clflags.error_size in
+  let size = !Utils.Clflags.error_size in
   size > 0 &&
   begin
     if Bytes.length !buffer < size then buffer := Bytes.create size;

@@ -19,7 +19,7 @@ type ocaml = {
   open_modules         : string list;
   ppx                  : string with_workdir list;
   pp                   : string with_workdir option;
-  warnings             : Warnings.state;
+  warnings             : Utils.Warnings.state;
 }
 
 val dump_ocaml : ocaml -> json

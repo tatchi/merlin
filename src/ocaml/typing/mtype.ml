@@ -38,11 +38,11 @@ let rec strengthen ~aliasable env mty p =
     Mty_signature sg ->
       Mty_signature(strengthen_sig ~aliasable env sg p)
   | Mty_functor(Named (Some param, arg), res)
-    when !Clflags.applicative_functors ->
+    when !Utils.Clflags.applicative_functors ->
       Mty_functor(Named (Some param, arg),
         strengthen ~aliasable:false env res (Papply(p, Pident param)))
   | Mty_functor(Named (None, arg), res)
-    when !Clflags.applicative_functors ->
+    when !Utils.Clflags.applicative_functors ->
       let param = Ident.create_scoped ~scope:(Path.scope p) "Arg" in
       Mty_functor(Named (Some param, arg),
         strengthen ~aliasable:false env res (Papply(p, Pident param)))

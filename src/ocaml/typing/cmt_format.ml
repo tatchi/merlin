@@ -26,7 +26,7 @@ open Typedtree
 
 
 let read_magic_number ic =
-  let len_magic_number = String.length Config.cmt_magic_number in
+  let len_magic_number = String.length Utils.Config.cmt_magic_number in
   really_input_string ic len_magic_number
 
 type binary_annots =
@@ -107,7 +107,7 @@ exception Error of error
 let input_cmt ic = (input_value ic : cmt_infos)
 
 let output_cmt oc cmt =
-  output_string oc Config.cmt_magic_number;
+  output_string oc Utils.Config.cmt_magic_number;
   output_value oc (cmt : cmt_infos)
 
 let read filename =
@@ -118,13 +118,13 @@ let read filename =
     (fun () ->
        let magic_number = read_magic_number ic in
        let cmi, cmt =
-         if magic_number = Config.cmt_magic_number then
+         if magic_number = Utils.Config.cmt_magic_number then
            None, Some (input_cmt ic)
-         else if magic_number = Config.cmi_magic_number then
+         else if magic_number = Utils.Config.cmi_magic_number then
            let cmi = Cmi_format.input_cmi ic in
            let cmt = try
                let magic_number = read_magic_number ic in
-               if magic_number = Config.cmt_magic_number then
+               if magic_number = Utils.Config.cmt_magic_number then
                  let cmt = input_cmt ic in
                  Some cmt
                else None
@@ -166,7 +166,7 @@ let set_saved_types l = saved_types := l
 let record_value_dependency _vd1 _vd2 = ()
 
 let save_cmt filename modname binary_annots sourcefile initial_env cmi =
-  if !Clflags.binary_annotations && not !Clflags.print_types then begin
+  if !Utils.Clflags.binary_annotations && not !Utils.Clflags.print_types then begin
     Misc.output_to_file_via_temporary
        ~mode:[Open_binary] filename
        (fun temp_file_name oc ->
@@ -184,7 +184,7 @@ let save_cmt filename modname binary_annots sourcefile initial_env cmi =
            cmt_args = Sys.argv;
            cmt_sourcefile = sourcefile;
            cmt_builddir = Location.rewrite_absolute_path (Sys.getcwd ());
-           cmt_loadpath = Load_path.get_paths ();
+           cmt_loadpath = Utils.Load_path.get_paths ();
            cmt_source_digest = source_digest;
            cmt_initial_env = if need_to_clear_env then
                keep_only_summary initial_env else initial_env;

@@ -52,12 +52,12 @@ let annotations = ref ([] : annotation list);;
 let phrases = ref ([] : Location.t list);;
 
 let record ti =
-  if !Clflags.annotations && not (get_location ti).Location.loc_ghost then
+  if !Utils.Clflags.annotations && not (get_location ti).Location.loc_ghost then
     annotations := ti :: !annotations
 ;;
 
 let record_phrase loc =
-  if !Clflags.annotations then phrases := loc :: !phrases;
+  if !Utils.Clflags.annotations then phrases := loc :: !phrases;
 ;;
 
 (* comparison order:
@@ -193,7 +193,7 @@ let get_info () =
 ;;
 
 let dump filename =
-  if !Clflags.annotations then begin
+  if !Utils.Clflags.annotations then begin
     let do_dump _temp_filename pp =
       let info = get_info () in
       sort_filter_phrases ();

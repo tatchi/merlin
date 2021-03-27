@@ -76,7 +76,7 @@ exception Error of Location.t * error
 let get_unboxed_from_attributes sdecl =
   let unboxed = Builtin_attributes.has_unboxed sdecl.ptype_attributes in
   let boxed = Builtin_attributes.has_boxed sdecl.ptype_attributes in
-  match boxed, unboxed, !Clflags.unboxed_types with
+  match boxed, unboxed, !Utils.Clflags.unboxed_types with
   | true, true, _ -> raise (Error(sdecl.ptype_loc, Boxed_and_unboxed))
   | true, false, _ -> unboxed_false_default_false
   | false, true, _ -> unboxed_true_default_false
@@ -335,7 +335,7 @@ let transl_declaration env sdecl (id, uid) =
           match cstrs with
             [] -> ()
           | (_,_,loc)::_ ->
-              Location.prerr_warning loc Warnings.Constraint_on_gadt
+              Location.prerr_warning loc Utils.Warnings.Constraint_on_gadt
         end;
         let all_constrs = ref String.Set.empty in
         List.iter
@@ -346,7 +346,7 @@ let transl_declaration env sdecl (id, uid) =
           scstrs;
         if List.length
             (List.filter (fun cd -> cd.pcd_args <> Pcstr_tuple []) scstrs)
-           > (Config.max_tag + 1) then
+           > (Utils.Config.max_tag + 1) then
           raise(Error(sdecl.ptype_loc, Too_many_constructors));
         let make_cstr scstr =
           let name = Ident.create_local scstr.pcd_name.txt in
@@ -623,9 +623,9 @@ let check_well_founded env loc path to_check ty =
     let rec_ok =
       match ty.desc with
         Tconstr(p,_,_) ->
-          !Clflags.recursive_types && Ctype.is_contractive env p
+          !Utils.Clflags.recursive_types && Ctype.is_contractive env p
       | Tobject _ | Tvariant _ -> true
-      | _ -> !Clflags.recursive_types
+      | _ -> !Utils.Clflags.recursive_types
     in
     let visited' = TypeMap.add ty parents !visited in
     let arg_exn =
@@ -752,7 +752,7 @@ let check_duplicates sdecl_list =
             try
               let name' = Hashtbl.find constrs pcd.pcd_name.txt in
               Location.prerr_warning pcd.pcd_loc
-                (Warnings.Duplicate_definitions
+                (Utils.Warnings.Duplicate_definitions
                    ("constructor", pcd.pcd_name.txt, name',
                     sdecl.ptype_name.txt))
             with Not_found ->
@@ -764,7 +764,7 @@ let check_duplicates sdecl_list =
             try
               let name' = Hashtbl.find labels cname.txt in
               Location.prerr_warning loc
-                (Warnings.Duplicate_definitions
+                (Utils.Warnings.Duplicate_definitions
                    ("label", cname.txt, name', sdecl.ptype_name.txt))
             with Not_found -> Hashtbl.add labels cname.txt sdecl.ptype_name.txt)
           fl
@@ -801,7 +801,7 @@ let check_redefined_unit (td: Parsetree.type_declaration) =
       ptype_manifest = None;
       ptype_kind = Ptype_variant [ cd ] }
     when is_unit_constructor cd ->
-      Location.prerr_warning td.ptype_loc (Warnings.Redefining_unit name)
+      Location.prerr_warning td.ptype_loc (Utils.Warnings.Redefining_unit name)
   | _ ->
       ()
 
@@ -845,7 +845,7 @@ let transl_type_decl env rec_flag sdecl_list =
     List.fold_left2 (enter_type rec_flag) env sdecl_list ids_list in
   (* Translate each declaration. *)
   let current_slot = ref None in
-  let warn_unused = Warnings.is_active (Warnings.Unused_type_declaration "") in
+  let warn_unused = Utils.Warnings.is_active (Utils.Warnings.Unused_type_declaration "") in
   let ids_slots (id, _uid as ids) =
     match rec_flag with
     | Asttypes.Recursive when warn_unused ->
@@ -1321,7 +1321,7 @@ let check_unboxable env loc ty =
     (fun p () ->
        let p = Printtyp.shorten_type_path env p in
        Location.prerr_warning loc
-         (Warnings.Unboxable_type_in_prim_decl (Path.name p))
+         (Utils.Warnings.Unboxable_type_in_prim_decl (Path.name p))
     )
     all_unboxable_types
     ()
@@ -1360,7 +1360,7 @@ let transl_value_decl env loc valdecl =
          (prim.prim_name = "" || prim.prim_name.[0] <> '%') then
         raise(Error(valdecl.pval_type.ptyp_loc, Null_arity_external));
       *)
-      if !Clflags.native_code
+      if !Utils.Clflags.native_code
       && prim.prim_arity > 5
       && prim.prim_native_name = ""
       then raise(Error(valdecl.pval_type.ptyp_loc, Missing_native_external));
@@ -1372,7 +1372,7 @@ let transl_value_decl env loc valdecl =
   in
   let (id, newenv) =
     Env.enter_value valdecl.pval_name.txt v env
-      ~check:(fun s -> Warnings.Unused_value_declaration s)
+      ~check:(fun s -> Utils.Warnings.Unused_value_declaration s)
   in
   let desc =
     {
@@ -1645,7 +1645,7 @@ let report_error ppf = function
   | Too_many_constructors ->
       fprintf ppf
         "@[Too many non-constant constructors@ -- maximum is %i %s@]"
-        (Config.max_tag + 1) "non-constant constructors"
+        (Utils.Config.max_tag + 1) "non-constant constructors"
   | Duplicate_label s ->
       fprintf ppf "Two labels are named %s" s
   | Recursive_abbrev s ->

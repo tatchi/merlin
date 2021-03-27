@@ -63,14 +63,14 @@ let resume_raise exn =
   raise Resume
 
 let catch_errors warnings caught f =
-  let warnings' = Warnings.backup () in
+  let warnings' = Utils.Warnings.backup () in
   let errors' = !errors in
-  Warnings.restore warnings;
+  Utils.Warnings.restore warnings;
   errors := (Some (caught,Btype.TypeHash.create 3));
   Misc.try_finally f
     ~always:(fun () ->
        errors := errors';
-       Warnings.restore warnings')
+       Utils.Warnings.restore warnings')
 
 let uncatch_errors f =
   let_ref errors None f

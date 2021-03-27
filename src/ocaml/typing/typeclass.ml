@@ -59,7 +59,7 @@ type 'a full_class = {
   cl_abbr: type_declaration;
   arity: int;
   pub_meths: string list;
-  coe: Warnings.loc list;
+  coe: Utils.Warnings.loc list;
   expr: 'a;
   req: 'a Typedtree.class_infos;
 }
@@ -330,10 +330,10 @@ let inheritance self_type env ovf concr_meths warn_vals loc parent =
           in
           if not (Concr.is_empty over_meths) then
             Location.prerr_warning loc
-              (Warnings.Method_override (cname :: Concr.elements over_meths));
+              (Utils.Warnings.Method_override (cname :: Concr.elements over_meths));
           if not (Concr.is_empty over_vals) then
             Location.prerr_warning loc
-              (Warnings.Instance_variable_override
+              (Utils.Warnings.Instance_variable_override
                  (cname :: Concr.elements over_vals));
       | Some Override
         when Concr.is_empty over_meths && Concr.is_empty over_vals ->
@@ -379,7 +379,7 @@ let declare_method val_env meths self_type lab priv sty loc =
 so that we can get an immediate value. Is that correct ? Ask Jacques. *)
       let returned_cty = ctyp Ttyp_any (Ctype.newty Tnil) val_env loc in
       delayed_meth_specs :=
-      Warnings.mk_lazy (fun () ->
+      Utils.Warnings.mk_lazy (fun () ->
             let cty = transl_simple_type_univars val_env sty' in
             let ty = cty.ctyp_type in
             unif ty;
@@ -639,7 +639,7 @@ and class_field_aux self_loc cl_num self_type meths vars
             (class_env,None)
         | Some {txt=name} ->
             let (_id, class_env) =
-              enter_met_env ~check:(fun s -> Warnings.Unused_ancestor s)
+              enter_met_env ~check:(fun s -> Utils.Warnings.Unused_ancestor s)
                 sparent.pcl_loc name (Val_anc (inh_meths, cl_num))
                 Val_unbound_ancestor self_type class_env
             in
@@ -651,10 +651,10 @@ and class_field_aux self_loc cl_num self_type meths vars
        concr_meths, warn_vals, inher, local_meths, local_vals)
 
   | Pcf_val (lab, mut, Cfk_virtual styp) ->
-      if !Clflags.principal then Ctype.begin_def ();
+      if !Utils.Clflags.principal then Ctype.begin_def ();
       let cty = Typetexp.transl_simple_type val_env false styp in
       let ty = cty.ctyp_type in
-      if !Clflags.principal then begin
+      if !Utils.Clflags.principal then begin
         Ctype.end_def ();
         Ctype.generalize_structure ty
       end;
@@ -674,15 +674,15 @@ and class_field_aux self_loc cl_num self_type meths vars
       if Concr.mem lab.txt warn_vals then begin
         if ovf = Fresh then
           Location.prerr_warning lab.loc
-            (Warnings.Instance_variable_override[lab.txt])
+            (Utils.Warnings.Instance_variable_override[lab.txt])
       end else begin
         if ovf = Override then
           raise(Error(loc, val_env,
                       No_overriding ("instance variable", lab.txt)))
       end;
-      if !Clflags.principal then Ctype.begin_def ();
+      if !Utils.Clflags.principal then Ctype.begin_def ();
       let exp = type_exp val_env sexp in
-      if !Clflags.principal then begin
+      if !Utils.Clflags.principal then begin
         Ctype.end_def ();
         Ctype.generalize_structure exp.exp_type
        end;
@@ -714,7 +714,7 @@ and class_field_aux self_loc cl_num self_type meths vars
         raise(Error(loc, val_env, Duplicate ("method", lab.txt)));
       if Concr.mem lab.txt concr_meths then begin
         if ovf = Fresh then
-          Location.prerr_warning loc (Warnings.Method_override [lab.txt])
+          Location.prerr_warning loc (Utils.Warnings.Method_override [lab.txt])
       end else begin
         if ovf = Override then
           raise(Error(loc, val_env, No_overriding("method", lab.txt)))
@@ -752,7 +752,7 @@ and class_field_aux self_loc cl_num self_type meths vars
       let vars_local = !vars in
 
       let field =
-        Warnings.mk_lazy
+        Utils.Warnings.mk_lazy
           (fun () ->
              (* Read the generalized type *)
              let (_, ty) = Meths.find lab.txt !meths in
@@ -912,7 +912,7 @@ and class_structure cl_num final val_env met_env loc
   end;
 
   (* Typing of method bodies *)
-  (* if !Clflags.principal then *) begin
+  (* if !Utils.Clflags.principal then *) begin
     let ms = !meths in
     (* Generalize the spine of methods accessed through self *)
     Meths.iter (fun _ (_,ty) -> Ctype.generalize_spine ty) ms;
@@ -932,7 +932,7 @@ and class_structure cl_num final val_env met_env loc
   let l1 = names priv_meths and l2 = names pub_meths' in
   let added = List.filter (fun x -> List.mem x l1) l2 in
   if added <> [] then
-    Location.prerr_warning loc (Warnings.Implicit_public_methods added);
+    Location.prerr_warning loc (Utils.Warnings.Implicit_public_methods added);
   let sign = if final then sign else
       {sign with Types.csig_self = Ctype.expand_head val_env public_self} in
   {
@@ -1024,11 +1024,11 @@ and class_expr_aux cl_num val_env met_env scl =
       in
       class_expr cl_num val_env met_env sfun
   | Pcl_fun (l, None, spat, scl') ->
-      if !Clflags.principal then Ctype.begin_def ();
+      if !Utils.Clflags.principal then Ctype.begin_def ();
       let (pat, pv, val_env', met_env) =
         Typecore.type_class_arg_pattern cl_num val_env met_env l spat
       in
-      if !Clflags.principal then begin
+      if !Utils.Clflags.principal then begin
         Ctype.end_def ();
         let gen {pat_type = ty} = Ctype.generalize_structure ty in
         iter_pattern gen pat
@@ -1064,7 +1064,7 @@ and class_expr_aux cl_num val_env met_env scl =
       Ctype.end_def ();
       if Btype.is_optional l && not_nolabel_function cl.cl_type then
         Location.prerr_warning pat.pat_loc
-          Warnings.Unerasable_optional_argument;
+          Utils.Warnings.Unerasable_optional_argument;
       rc {cl_desc = Tcl_fun (l, pat, pv, cl, partial);
           cl_loc = scl.pcl_loc;
           cl_type = Cty_arrow
@@ -1074,9 +1074,9 @@ and class_expr_aux cl_num val_env met_env scl =
          }
   | Pcl_apply (scl', sargs) ->
       assert (sargs <> []);
-      if !Clflags.principal then Ctype.begin_def ();
+      if !Utils.Clflags.principal then Ctype.begin_def ();
       let cl = class_expr cl_num val_env met_env scl' in
-      if !Clflags.principal then begin
+      if !Utils.Clflags.principal then begin
         Ctype.end_def ();
         generalize_class_type false cl.cl_type;
       end;
@@ -1088,7 +1088,7 @@ and class_expr_aux cl_num val_env met_env scl =
         | _    -> ls
       in
       let ignore_labels =
-        !Clflags.classic ||
+        !Utils.Clflags.classic ||
         let labels = nonopt_labels [] cl.cl_type in
         List.length labels = List.length sargs &&
         List.for_all (fun (l,_) -> l = Nolabel) sargs &&
@@ -1096,7 +1096,7 @@ and class_expr_aux cl_num val_env met_env scl =
         begin
           Location.prerr_warning
             cl.cl_loc
-            (Warnings.Labels_omitted
+            (Utils.Warnings.Labels_omitted
                (List.map Printtyp.string_of_label
                          (List.filter ((<>) Nolabel) labels)));
           true
@@ -1144,7 +1144,7 @@ and class_expr_aux cl_num val_env met_env scl =
                 | Some (l', sarg, _, remaining_sargs) ->
                     if not optional && Btype.is_optional l' then
                       Location.prerr_warning sarg.pexp_loc
-                        (Warnings.Nonoptional_label
+                        (Utils.Warnings.Nonoptional_label
                            (Printtyp.string_of_label l));
                     remaining_sargs, use_arg sarg l'
                 | None ->
@@ -1334,7 +1334,7 @@ let initial_env define_class approx
 
   (* Temporary type for the class constructor *)
   let constr_type = approx cl.pci_expr in
-  if !Clflags.principal then Ctype.generalize_spine constr_type;
+  if !Utils.Clflags.principal then Ctype.generalize_spine constr_type;
   let dummy_cty =
     Cty_signature
       { csig_self = Ctype.newvar ();

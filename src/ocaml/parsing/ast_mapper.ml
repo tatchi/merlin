@@ -818,18 +818,18 @@ module PpxContext = struct
     let fields =
       [
         lid "tool_name",    make_string tool_name;
-        lid "include_dirs", make_list make_string !Clflags.include_dirs;
-        lid "load_path",    make_list make_string (Load_path.get_paths ());
-        lid "open_modules", make_list make_string !Clflags.open_modules;
-        lid "for_package",  make_option make_string !Clflags.for_package;
-        lid "debug",        make_bool !Clflags.debug;
+        lid "include_dirs", make_list make_string !Utils.Clflags.include_dirs;
+        lid "load_path",    make_list make_string (Utils.Load_path.get_paths ());
+        lid "open_modules", make_list make_string !Utils.Clflags.open_modules;
+        lid "for_package",  make_option make_string !Utils.Clflags.for_package;
+        lid "debug",        make_bool !Utils.Clflags.debug;
         lid "use_threads",  make_bool false;
         lid "use_vmthreads", make_bool false;
-        lid "recursive_types", make_bool !Clflags.recursive_types;
-        lid "principal", make_bool !Clflags.principal;
-        lid "transparent_modules", make_bool !Clflags.transparent_modules;
-        lid "unboxed_types", make_bool !Clflags.unboxed_types;
-        lid "unsafe_string", make_bool !Clflags.unsafe_string;
+        lid "recursive_types", make_bool !Utils.Clflags.recursive_types;
+        lid "principal", make_bool !Utils.Clflags.principal;
+        lid "transparent_modules", make_bool !Utils.Clflags.transparent_modules;
+        lid "unboxed_types", make_bool !Utils.Clflags.unboxed_types;
+        lid "unsafe_string", make_bool !Utils.Clflags.unsafe_string;
         get_cookies ()
       ]
     in
@@ -887,15 +887,15 @@ module PpxContext = struct
       | "tool_name" ->
           tool_name_ref := get_string payload
       | "include_dirs" ->
-          Clflags.include_dirs := get_list get_string payload
+          Utils.Clflags.include_dirs := get_list get_string payload
       | "load_path" ->
-          Load_path.init (get_list get_string payload)
+          Utils.Load_path.init (get_list get_string payload)
       | "open_modules" ->
-          Clflags.open_modules := get_list get_string payload
+          Utils.Clflags.open_modules := get_list get_string payload
       | "for_package" ->
-          Clflags.for_package := get_option get_string payload
+          Utils.Clflags.for_package := get_option get_string payload
       | "debug" ->
-          Clflags.debug := get_bool payload
+          Utils.Clflags.debug := get_bool payload
       (*| "use_threads" ->
           Clflags.use_threads := get_bool payload
       | "use_vmthreads" ->
@@ -903,15 +903,15 @@ module PpxContext = struct
             raise_errorf "Internal error: vmthreads not supported after 4.09.0"
         *)
       | "recursive_types" ->
-          Clflags.recursive_types := get_bool payload
+          Utils.Clflags.recursive_types := get_bool payload
       | "principal" ->
-          Clflags.principal := get_bool payload
+          Utils.Clflags.principal := get_bool payload
       | "transparent_modules" ->
-          Clflags.transparent_modules := get_bool payload
+          Utils.Clflags.transparent_modules := get_bool payload
       | "unboxed_types" ->
-          Clflags.unboxed_types := get_bool payload
+          Utils.Clflags.unboxed_types := get_bool payload
       | "unsafe_string" ->
-          Clflags.unsafe_string := get_bool payload
+          Utils.Clflags.unsafe_string := get_bool payload
       | "cookies" ->
           let l = get_list (get_pair get_string (fun x -> x)) payload in
           cookies :=
@@ -987,7 +987,7 @@ let apply_lazy ~source ~target mapper =
 
   let ic = open_in_bin source in
   let magic =
-    really_input_string ic (String.length Config.ast_impl_magic_number)
+    really_input_string ic (String.length Utils.Config.ast_impl_magic_number)
   in
 
   let rewrite transform =
@@ -1005,9 +1005,9 @@ let apply_lazy ~source ~target mapper =
     failwith "Ast_mapper: OCaml version mismatch or malformed input";
   in
 
-  if magic = Config.ast_impl_magic_number then
+  if magic = Utils.Config.ast_impl_magic_number then
     rewrite (implem : structure -> structure)
-  else if magic = Config.ast_intf_magic_number then
+  else if magic = Utils.Config.ast_intf_magic_number then
     rewrite (iface : signature -> signature)
   else fail ()
 

@@ -33,16 +33,16 @@ open Parsetree
 let fresh_env () =
   (*Ident.reinit();*)
   let initially_opened_module =
-    if !Clflags.nopervasives then
+    if !Utils.Clflags.nopervasives then
       None
     else
       Some "Stdlib"
   in
   Typemod.initial_env
     ~loc:(Location.in_file "command line")
-    ~safe_string:(not !Clflags.unsafe_string)
+    ~safe_string:(not !Utils.Clflags.unsafe_string)
     ~initially_opened_module
-    ~open_implicit_modules:(List.rev !Clflags.open_modules)
+    ~open_implicit_modules:(List.rev !Utils.Clflags.open_modules)
 
 module Rewrite_loc = struct
   let queue = ref []

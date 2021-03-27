@@ -17,7 +17,7 @@
 
 type t
 
-include Identifiable.S with type t := t
+include Utils.Identifiable.S with type t := t
 (* Notes:
    - [equal] compares identifiers by name
    - [compare x y] is 0 if [same x y] is true.

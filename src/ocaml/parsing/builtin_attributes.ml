@@ -168,18 +168,18 @@ let check_no_alert attrs =
   List.iter
     (fun (a, _, _) ->
        Location.prerr_warning a.attr_loc
-         (Warnings.Misplaced_attribute a.attr_name.txt)
+         (Utils.Warnings.Misplaced_attribute a.attr_name.txt)
     )
     (alert_attrs attrs)
 
 let warn_payload loc txt msg =
-  Location.prerr_warning loc (Warnings.Attribute_payload (txt, msg))
+  Location.prerr_warning loc (Utils.Warnings.Attribute_payload (txt, msg))
 
 let warning_attribute ?(ppwarning = true) =
   let process loc txt errflag payload =
     match string_of_payload payload with
     | Some s ->
-        begin try Warnings.parse_options errflag s
+        begin try Utils.Warnings.parse_options errflag s
         with Arg.Bad msg -> warn_payload loc txt msg
         end
     | None ->
@@ -191,7 +191,7 @@ let warning_attribute ?(ppwarning = true) =
                 {pexp_desc=Pexp_constant(Pconst_string(s,_,_))},
                 _)
            }] ->
-        begin try Warnings.parse_alert_option s
+        begin try Utils.Warnings.parse_alert_option s
         with Arg.Bad msg -> warn_payload loc txt msg
         end
     | k ->
@@ -221,7 +221,7 @@ let warning_attribute ?(ppwarning = true) =
            pstr_loc }
        ];
     } when ppwarning ->
-     Location.prerr_warning pstr_loc (Warnings.Preprocessor s)
+     Location.prerr_warning pstr_loc (Utils.Warnings.Preprocessor s)
   | {attr_name = {txt = ("ocaml.alert"|"alert") as txt; _};
      attr_loc;
      attr_payload;
@@ -231,14 +231,14 @@ let warning_attribute ?(ppwarning = true) =
      ()
 
 let warning_scope ?ppwarning attrs f =
-  let prev = Warnings.backup () in
+  let prev = Utils.Warnings.backup () in
   try
     List.iter (warning_attribute ?ppwarning) (List.rev attrs);
     let ret = f () in
-    Warnings.restore prev;
+    Utils.Warnings.restore prev;
     ret
   with exn ->
-    Warnings.restore prev;
+    Utils.Warnings.restore prev;
     raise exn
 
 

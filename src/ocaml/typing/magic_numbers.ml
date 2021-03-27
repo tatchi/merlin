@@ -40,7 +40,7 @@ module Cmi = struct
           "%a@ seems to be compiled with OCaml %s.@.\
            But this instance of Merlin handles OCaml %s."
           Location.print_filename filename version
-          (Option.get @@ to_version_opt Config.cmi_magic_number)
+          (Option.get @@ to_version_opt Utils.Config.cmi_magic_number)
       end
     | Corrupted_interface filename ->
         fprintf ppf "Corrupted compiled interface@ %a"

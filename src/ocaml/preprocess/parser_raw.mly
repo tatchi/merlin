@@ -247,7 +247,7 @@ let dotop_fun ~loc dotop =
 
 let array_function ~loc str name =
   ghloc ~loc (Ldot(Lident str,
-                   (if !Clflags.fast then "unsafe_" ^ name else name)))
+                   (if !Utils.Clflags.fast then "unsafe_" ^ name else name)))
 
 let array_get_fun ~loc =
   ghexp ~loc (Pexp_ident(array_function ~loc "Array" "get"))
@@ -298,7 +298,7 @@ let bigarray_untuplify = function
 let bigarray_get ~loc arr arg =
   let mkexp, ghexp = mkexp ~loc, ghexp ~loc in
   let bigarray_function = bigarray_function ~loc in
-  let get = if !Clflags.fast then "unsafe_get" else "get" in
+  let get = if !Utils.Clflags.fast then "unsafe_get" else "get" in
   match bigarray_untuplify arg with
     [c1] ->
       mkexp(Pexp_apply(ghexp(Pexp_ident(bigarray_function "Array1" get)),
@@ -316,7 +316,7 @@ let bigarray_get ~loc arr arg =
 let bigarray_set ~loc arr arg newval =
   let mkexp, ghexp = mkexp ~loc, ghexp ~loc in
   let bigarray_function = bigarray_function ~loc in
-  let set = if !Clflags.fast then "unsafe_set" else "set" in
+  let set = if !Utils.Clflags.fast then "unsafe_set" else "set" in
   match bigarray_untuplify arg with
     [c1] ->
       mkexp(Pexp_apply(ghexp(Pexp_ident(bigarray_function "Array1" set)),
@@ -336,7 +336,7 @@ let bigarray_set ~loc arr arg newval =
                         Nolabel, newval]))
 
 let lapply ~loc p1 p2 =
-  if !Clflags.applicative_functors
+  if !Utils.Clflags.applicative_functors
   then Lapply(p1, p2)
   else raise (Syntaxerr.Error(
                   Syntaxerr.Applicative_path (make_loc loc)))

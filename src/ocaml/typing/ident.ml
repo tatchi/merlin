@@ -13,7 +13,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Local_store
+open Utils.Local_store
 
 let lowest_scope  = 0
 let highest_scope = 100000000
@@ -346,7 +346,7 @@ let output oc id = output_string oc (unique_name id)
 let hash i = (Char.code (name i).[0]) lxor (stamp i)
 
 let original_equal = equal
-include Identifiable.Make (struct
+include Utils.Identifiable.Make (struct
   type nonrec t = t
   let compare = compare
   let output = output

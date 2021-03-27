@@ -1,5 +1,5 @@
 open Std
-open Local_store
+open Utils.Local_store
 
 let {Logger. log} = Logger.for_section "Mtyper"
 
@@ -10,7 +10,7 @@ type ('p,'t) item = {
   part_env       : Env.t;
   part_errors    : exn list;
   part_checks    : Typecore.delayed_check list;
-  part_warnings  : Warnings.state;
+  part_warnings  : Utils.Warnings.state;
 }
 
 type typedtree = [
@@ -75,7 +75,7 @@ let rec type_structure caught env = function
       part_snapshot = Btype.snapshot ();
       part_errors   = !caught;
       part_checks   = !Typecore.delayed_checks;
-      part_warnings = Warnings.backup ();
+      part_warnings = Utils.Warnings.backup ();
     } in
     item :: type_structure caught part_env rest
   | [] -> []
@@ -89,7 +89,7 @@ let rec type_signature caught env = function
       part_snapshot = Btype.snapshot ();
       part_errors   = !caught;
       part_checks   = !Typecore.delayed_checks;
-      part_warnings = Warnings.backup ();
+      part_warnings = Utils.Warnings.backup ();
     } in
     item :: type_signature caught part_env rest
   | [] -> []
@@ -102,14 +102,14 @@ let type_implementation config caught parsetree =
     | Some (`Interface _) | None -> ([], parsetree)
   in
   let env', snap', warn' = match prefix with
-    | [] -> (env0, snap0, Warnings.backup ())
+    | [] -> (env0, snap0, Utils.Warnings.backup ())
     | x :: _ ->
       caught := x.part_errors;
       Typecore.delayed_checks := x.part_checks;
       (x.part_env, x.part_snapshot, x.part_warnings)
   in
   Btype.backtrack snap';
-  Warnings.restore warn';
+  Utils.Warnings.restore warn';
   let suffix = type_structure caught env' parsetree in
   return_and_cache
     (env0, snap0, `Implementation (List.rev_append prefix suffix))
@@ -122,14 +122,14 @@ let type_interface config caught parsetree =
     | Some (`Implementation _) | None -> ([], parsetree)
   in
   let env', snap', warn' = match prefix with
-    | [] -> (env0, snap0, Warnings.backup ())
+    | [] -> (env0, snap0, Utils.Warnings.backup ())
     | x :: _ ->
       caught := x.part_errors;
       Typecore.delayed_checks := x.part_checks;
       (x.part_env, x.part_snapshot, x.part_warnings)
   in
   Btype.backtrack snap';
-  Warnings.restore warn';
+  Utils.Warnings.restore warn';
   let suffix = type_signature caught env' parsetree in
   return_and_cache
     (env0, snap0, `Interface (List.rev_append prefix suffix))
@@ -137,7 +137,7 @@ let type_interface config caught parsetree =
 let run config parsetree =
   if not (Env.check_state_consistency ()) then (
     Mocaml.flush_caches ();
-    Local_store.reset ();
+    Utils.Local_store.reset ();
   );
   Mocaml.setup_config config;
   let caught = ref [] in

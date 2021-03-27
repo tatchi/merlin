@@ -263,7 +263,7 @@ val make_copy_of_types: t -> (t -> t)
 (* Insertion by identifier *)
 
 val add_value:
-    ?check:(string -> Warnings.t) -> Ident.t -> value_description -> t -> t
+    ?check:(string -> Utils.Warnings.t) -> Ident.t -> value_description -> t -> t
 val add_type: check:bool -> Ident.t -> type_declaration -> t -> t
 val add_extension:
   check:bool -> rebind:bool -> Ident.t -> extension_constructor -> t -> t
@@ -288,7 +288,7 @@ val add_persistent_structure : Ident.t -> t -> t
 
 (* Returns the set of persistent structures found in the given
    directory. *)
-val persistent_structures_of_dir : Load_path.Dir.t -> Misc.String.Set.t
+val persistent_structures_of_dir : Utils.Load_path.Dir.t -> Misc.String.Set.t
 
 (* [filter_non_loaded_persistent f env] removes all the persistent
    structures that are not yet loaded and for which [f] returns
@@ -314,7 +314,7 @@ val open_pers_signature: string -> t -> (t, [`Not_found]) result
 (* Insertion by name *)
 
 val enter_value:
-    ?check:(string -> Warnings.t) ->
+    ?check:(string -> Utils.Warnings.t) ->
     string -> value_description -> t -> Ident.t * t
 val enter_type: scope:int -> string -> type_declaration -> t -> Ident.t * t
 val enter_extension:

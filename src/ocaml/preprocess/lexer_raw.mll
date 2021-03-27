@@ -513,7 +513,7 @@ rule token state = parse
       }
   | "(*)"
       { let loc = Location.curr lexbuf in
-        Location.prerr_warning loc Warnings.Comment_start;
+        Location.prerr_warning loc Utils.Warnings.Comment_start;
         state.comment_start_loc <- [loc];
         Buffer.reset state.buffer;
         comment state lexbuf >>= fun end_loc ->
@@ -523,7 +523,7 @@ rule token state = parse
       }
   | "*)"
       { let loc = Location.curr lexbuf in
-        Location.prerr_warning loc Warnings.Comment_not_end;
+        Location.prerr_warning loc Utils.Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
         let curpos = lexbuf.lex_curr_p in
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
@@ -739,7 +739,7 @@ and string state = parse
                         (Location.curr lexbuf)
 *)
           let loc = Location.curr lexbuf in
-          Location.prerr_warning loc Warnings.Illegal_backslash;
+          Location.prerr_warning loc Utils.Warnings.Illegal_backslash;
           Buffer.add_char state.buffer (Lexing.lexeme_char lexbuf 0);
           Buffer.add_char state.buffer (Lexing.lexeme_char lexbuf 1);
           string state lexbuf
@@ -747,7 +747,7 @@ and string state = parse
       }
   | newline
       { if not (in_comment state) then
-          Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
+          Location.prerr_warning (Location.curr lexbuf) Utils.Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         Buffer.add_string state.buffer (Lexing.lexeme lexbuf);
         string state lexbuf

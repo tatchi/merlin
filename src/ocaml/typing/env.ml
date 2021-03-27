@@ -23,7 +23,7 @@ open Path
 open Types
 open Btype
 
-open Local_store
+open Utils.Local_store
 
 module String = Misc.String
 
@@ -412,7 +412,7 @@ type t = {
 
 and module_declaration_lazy =
   (Subst.t * Subst.scoping * module_declaration, module_declaration)
-    Lazy_backtrack.t
+  Utils.Lazy_backtrack.t
 
 and module_components =
   {
@@ -421,7 +421,7 @@ and module_components =
     comps:
       (components_maker,
        (module_components_repr, module_components_failure) result)
-        Lazy_backtrack.t;
+        Utils.Lazy_backtrack.t;
   }
 
 and components_maker = {
@@ -464,7 +464,7 @@ and address_unforced =
   | Projection of { parent : address_lazy; pos : int; }
   | ModAlias of { env : t; path : Path.t; }
 
-and address_lazy = (address_unforced, address) Lazy_backtrack.t
+and address_lazy = (address_unforced, address) Utils.Lazy_backtrack.t
 
 and value_data =
   { vda_description : value_description;
@@ -756,7 +756,7 @@ let add_persistent_structure id env =
          affect the environment at all. We should only observe the
          existence of a cmi when accessing components of the module.
          (See #9991). *)
-      if material || not !Clflags.transparent_modules then
+      if material || not !Utils.Clflags.transparent_modules then
         IdTbl.add id Mod_persistent env.modules
       else
         env.modules
@@ -768,7 +768,7 @@ let components_of_module ~alerts ~uid env fs ps path addr mty =
   {
     alerts;
     uid;
-    comps = Lazy_backtrack.create {
+    comps = Utils.Lazy_backtrack.create {
       cm_env = env;
       cm_freshening_subst = fs;
       cm_prefixing_subst = ps;
@@ -797,9 +797,9 @@ let sign_of_cmi ~freshen { Persistent_env.Persistent_signature.cmi; _ } =
       md_uid = Uid.of_compilation_unit_id id;
     }
   in
-  let mda_address = Lazy_backtrack.create_forced (Aident id) in
+  let mda_address = Utils.Lazy_backtrack.create_forced (Aident id) in
   let mda_declaration =
-    Lazy_backtrack.create (id_subst, Subst.Make_local, md)
+    Utils.Lazy_backtrack.create (id_subst, Subst.Make_local, md)
   in
   let mda_components =
     let freshening_subst =
@@ -877,9 +877,9 @@ let reset_cache_toplevel () =
 let get_components_res c =
   match Persistent_env.can_load_cmis !persistent_env with
   | Persistent_env.Can_load_cmis ->
-    Lazy_backtrack.force !components_of_module_maker' c.comps
+    Utils.Lazy_backtrack.force !components_of_module_maker' c.comps
   | Persistent_env.Cannot_load_cmis log ->
-    Lazy_backtrack.force_logged log !components_of_module_maker' c.comps
+    Utils.Lazy_backtrack.force_logged log !components_of_module_maker' c.comps
 
 let get_components c =
   match get_components_res c with
@@ -945,11 +945,11 @@ let find_module ~alias path env =
   match path with
   | Pident id ->
       let data = find_ident_module id env in
-      Lazy_backtrack.force subst_modtype_maker data.mda_declaration
+      Utils.Lazy_backtrack.force subst_modtype_maker data.mda_declaration
   | Pdot(p, s) ->
       let sc = find_structure_components p env in
       let data = NameMap.find s sc.comp_modules in
-      Lazy_backtrack.force subst_modtype_maker data.mda_declaration
+      Utils.Lazy_backtrack.force subst_modtype_maker data.mda_declaration
   | Papply(p1, p2) ->
       let fc = find_functor_components p1 env in
       if alias then md (fc.fcomp_res)
@@ -1077,7 +1077,7 @@ and force_address = function
   | ModAlias { env; path } -> find_module_address path env
 
 and get_address a =
-  Lazy_backtrack.force force_address a
+  Utils.Lazy_backtrack.force force_address a
 
 let find_value_address path env =
   get_address (find_value_full path env).vda_address
@@ -1126,7 +1126,7 @@ let required_globals = s_ref []
 let reset_required_globals () = required_globals := []
 let get_required_globals () = !required_globals
 let add_required_global id =
-  if Ident.global id && not !Clflags.transparent_modules
+  if Ident.global id && not !Utils.Clflags.transparent_modules
   && not (List.exists (Ident.same id) !required_globals)
   then required_globals := id :: !required_globals
 
@@ -1149,7 +1149,7 @@ and expand_module_path lax env path =
   try match find_module ~alias:true path env with
     {md_type=Mty_alias path1} ->
       let path' = normalize_module_path lax env path1 in
-      if lax || !Clflags.transparent_modules then path' else
+      if lax || !Utils.Clflags.transparent_modules then path' else
       let id = Path.head path in
       if Ident.global id && not (Ident.same id (Path.head path'))
       then add_required_global id;
@@ -1312,7 +1312,7 @@ let iter_env wrap proj1 proj2 f env () =
   let rec iter_components path path' mcomps =
     let cont () =
       let visit =
-        match Lazy_backtrack.get_arg mcomps.comps with
+        match Utils.Lazy_backtrack.get_arg mcomps.comps with
         | None -> true
         | Some { cm_mty; cm_freshening_subst; _ } ->
             scrape_alias_for_visit env cm_freshening_subst cm_mty
@@ -1428,7 +1428,7 @@ let rec scrape_alias env sub ?path mty =
         scrape_alias env sub (find_module path env).md_type ~path
       with Not_found ->
         (*Location.prerr_warning Location.none
-          (Warnings.No_cmi_file (Path.name path));*)
+          (Utils.Warnings.No_cmi_file (Path.name path));*)
         mty
       end
   | mty, Some path ->
@@ -1511,11 +1511,11 @@ let prefix_idents root freshening_sub prefixing_sub sg =
 (* Short path additions *)
 
 let short_paths_type predef id decl old =
-  if not predef && !Clflags.real_paths then old
+  if not predef && !Utils.Clflags.real_paths then old
   else Type(id, decl) :: old
 
 let short_paths_type_open path decls old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Type_open(path, decls) :: old
 
 let unbound_class = Path.Pident (Ident.create_local "*undef*")
@@ -1524,27 +1524,27 @@ let is_dummy_class decl =
   Path.same decl.clty_path unbound_class
 
 let short_paths_class_type id decl old =
-  if !Clflags.real_paths || is_dummy_class decl then old
+  if !Utils.Clflags.real_paths || is_dummy_class decl then old
   else Class_type(id, decl) :: old
 
 let short_paths_class_type_open path decls old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Class_type_open(path, decls) :: old
 
 let short_paths_module_type id decl old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Module_type(id, decl) :: old
 
 let short_paths_module_type_open path decls old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Module_type_open(path, decls) :: old
 
 let short_paths_module id decl comps old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Module(id, decl, comps) :: old
 
 let short_paths_module_open path comps old =
-  if !Clflags.real_paths then old
+  if !Utils.Clflags.real_paths then old
   else Module_open(path, comps) :: old
 
 (* Compute structure descriptions *)
@@ -1555,24 +1555,24 @@ let add_to_tbl id decl tbl =
 
 let value_declaration_address (_ : t) id decl =
   match decl.val_kind with
-  | Val_prim _ -> Lazy_backtrack.create_failed Not_found
-  | _ -> Lazy_backtrack.create_forced (Aident id)
+  | Val_prim _ -> Utils.Lazy_backtrack.create_failed Not_found
+  | _ -> Utils.Lazy_backtrack.create_forced (Aident id)
 
 let extension_declaration_address (_ : t) id (_ : extension_constructor) =
-  Lazy_backtrack.create_forced (Aident id)
+  Utils.Lazy_backtrack.create_forced (Aident id)
 
 let class_declaration_address (_ : t) id (_ : class_declaration) =
-  Lazy_backtrack.create_forced (Aident id)
+  Utils.Lazy_backtrack.create_forced (Aident id)
 
 let module_declaration_address env id presence md =
   match presence with
   | Mp_absent -> begin
       match md.md_type with
-      | Mty_alias path -> Lazy_backtrack.create (ModAlias {env; path})
+      | Mty_alias path -> Utils.Lazy_backtrack.create (ModAlias {env; path})
       | _ -> assert false
     end
   | Mp_present ->
-      Lazy_backtrack.create_forced (Aident id)
+      Utils.Lazy_backtrack.create_forced (Aident id)
 
 let is_identchar c =
   (* This should be kept in sync with the [identchar_latin1] character class
@@ -1606,7 +1606,7 @@ let rec components_of_module_maker
           Projection { parent = cm_addr; pos = !pos }
         in
         incr pos;
-        Lazy_backtrack.create addr
+        Utils.Lazy_backtrack.create addr
       in
       let sub = may_subst Subst.compose freshening_sub prefixing_sub in
       List.iter (fun (item, path) ->
@@ -1615,7 +1615,7 @@ let rec components_of_module_maker
             let decl' = Subst.value_description sub decl in
             let addr =
               match decl.val_kind with
-              | Val_prim _ -> Lazy_backtrack.create_failed Not_found
+              | Val_prim _ -> Utils.Lazy_backtrack.create_failed Not_found
               | _ -> next_address ()
             in
             let vda = { vda_description = decl'; vda_address = addr } in
@@ -1664,7 +1664,7 @@ let rec components_of_module_maker
             let md' =
               (* The prefixed items get the same scope as [cm_path], which is
                  the prefix. *)
-              Lazy_backtrack.create
+              Utils.Lazy_backtrack.create
                 (sub, Subst.Rescope (Path.scope cm_path), md)
             in
             let addr =
@@ -1673,7 +1673,7 @@ let rec components_of_module_maker
                   match md.md_type with
                   | Mty_alias p ->
                       let path = may_subst Subst.module_path freshening_sub p in
-                      Lazy_backtrack.create (ModAlias {env = !env; path})
+                      Utils.Lazy_backtrack.create (ModAlias {env = !env; path})
                   | _ -> assert false
                 end
               | Mp_present -> next_address ()
@@ -1745,7 +1745,7 @@ let rec components_of_module_maker
 and check_usage loc id uid warn tbl =
   if not loc.Location.loc_ghost &&
      Uid.for_actual_declaration uid &&
-     Warnings.is_active (warn "")
+     Utils.Warnings.is_active (warn "")
   then begin
     let name = Ident.name id in
     if Types.Uid.Tbl.mem tbl uid then ()
@@ -1781,7 +1781,7 @@ and store_type ~check ~predef id info env =
   let loc = info.type_loc in
   if check then
     check_usage loc id info.type_uid
-      (fun s -> Warnings.Unused_type_declaration s)
+      (fun s -> Utils.Warnings.Unused_type_declaration s)
       !type_declarations;
   let path = Pident id in
   let constructors =
@@ -1792,7 +1792,7 @@ and store_type ~check ~predef id info env =
   let descrs = (List.map snd constructors, List.map snd labels) in
   let tda = { tda_declaration = info; tda_descriptions = descrs } in
   if check && not loc.Location.loc_ghost &&
-    Warnings.is_active (Warnings.Unused_constructor ("", false, false))
+    Utils.Warnings.is_active (Utils.Warnings.Unused_constructor ("", false, false))
   then begin
     let ty_name = Ident.name id in
     let priv = info.type_private in
@@ -1810,7 +1810,7 @@ and store_type ~check ~predef id info env =
               (fun () ->
                 if not (is_in_signature env) && not used.cu_positive then
                   Location.prerr_warning loc
-                    (Warnings.Unused_constructor
+                    (Utils.Warnings.Unused_constructor
                        (name, used.cu_pattern, used.cu_privatize)))
       end
       constructors
@@ -1851,7 +1851,7 @@ and store_extension ~check ~rebind id addr ext env =
   in
   let cda = { cda_description = cstr; cda_address = Some addr } in
   if check && not loc.Location.loc_ghost &&
-    Warnings.is_active (Warnings.Unused_extension ("", false, false, false))
+    Utils.Warnings.is_active (Utils.Warnings.Unused_extension ("", false, false, false))
   then begin
     let priv = ext.ext_private in
     let is_exception = Path.same ext.ext_type_path Predef.path_exn in
@@ -1865,7 +1865,7 @@ and store_extension ~check ~rebind id addr ext env =
         (fun () ->
           if not (is_in_signature env) && not used.cu_positive then
             Location.prerr_warning loc
-              (Warnings.Unused_extension
+              (Utils.Warnings.Unused_extension
                  (name, is_exception, used.cu_pattern, used.cu_privatize)
               )
         )
@@ -1882,8 +1882,8 @@ and store_module ~check ~freshening_sub id addr presence md env =
   let alerts = Builtin_attributes.alerts_of_attrs md.md_attributes in
   let module_decl_lazy =
     match freshening_sub with
-    | None -> Lazy_backtrack.create_forced md
-    | Some s -> Lazy_backtrack.create (s, Subst.Rescope (Ident.scope id), md)
+    | None -> Utils.Lazy_backtrack.create_forced md
+    | Some s -> Utils.Lazy_backtrack.create (s, Subst.Rescope (Ident.scope id), md)
   in
   let comps =
     components_of_module ~alerts ~uid:md.md_uid
@@ -1938,7 +1938,7 @@ let components_of_functor_appl ~loc f env p1 p2 =
     (* we have to apply eagerly instead of passing sub to [components_of_module]
        because of the call to [check_well_formed_module]. *)
     let mty = Subst.modtype (Rescope (Path.scope p)) sub f.fcomp_res in
-    let addr = Lazy_backtrack.create_failed Not_found in
+    let addr = Utils.Lazy_backtrack.create_failed Not_found in
     !check_well_formed_module env loc
       ("the signature of " ^ Path.name p) mty;
     let comps =
@@ -1979,9 +1979,9 @@ and add_module_declaration ?(arg=false) ~check id presence md env =
     if not check then
       None
     else if arg && is_in_signature env then
-      Some (fun s -> Warnings.Unused_functor_parameter s)
+      Some (fun s -> Utils.Warnings.Unused_functor_parameter s)
     else
-      Some (fun s -> Warnings.Unused_module s)
+      Some (fun s -> Utils.Warnings.Unused_module s)
   in
   let addr = module_declaration_address env id presence md in
   let env = store_module ~freshening_sub:None ~check id addr presence md env in
@@ -2175,15 +2175,15 @@ let open_signature
     ovf root env =
   let unused root =
     match ovf with
-    | Asttypes.Fresh -> Warnings.Unused_open (Path.name root)
-    | Asttypes.Override -> Warnings.Unused_open_bang (Path.name root)
+    | Asttypes.Fresh -> Utils.Warnings.Unused_open (Path.name root)
+    | Asttypes.Override -> Utils.Warnings.Unused_open_bang (Path.name root)
   in
   let warn_unused =
-    Warnings.is_active (unused root)
+    Utils.Warnings.is_active (unused root)
   and warn_shadow_id =
-    Warnings.is_active (Warnings.Open_shadow_identifier ("", ""))
+    Utils.Warnings.is_active (Utils.Warnings.Open_shadow_identifier ("", ""))
   and warn_shadow_lc =
-    Warnings.is_active (Warnings.Open_shadow_label_constructor ("",""))
+    Utils.Warnings.is_active (Utils.Warnings.Open_shadow_label_constructor ("",""))
   in
   if not toplevel && not loc.Location.loc_ghost
      && (warn_unused || warn_shadow_id || warn_shadow_lc)
@@ -2206,8 +2206,8 @@ let open_signature
           let w =
             match kind with
             | "label" | "constructor" ->
-                Warnings.Open_shadow_label_constructor (kind, s)
-            | _ -> Warnings.Open_shadow_identifier (kind, s)
+                Utils.Warnings.Open_shadow_label_constructor (kind, s)
+            | _ -> Utils.Warnings.Open_shadow_identifier (kind, s)
           in
           Location.prerr_warning loc w
       | _ -> ()
@@ -2221,7 +2221,7 @@ let open_signature
 (* Read a signature from a file *)
 let read_signature modname filename =
   let mda = read_pers_mod modname filename in
-  let md = Lazy_backtrack.force subst_modtype_maker mda.mda_declaration in
+  let md = Utils.Lazy_backtrack.force subst_modtype_maker mda.mda_declaration in
   match md.md_type with
   | Mty_signature sg -> sg
   | Mty_ident _ | Mty_functor _ | Mty_alias _ -> assert false
@@ -2245,7 +2245,7 @@ let unit_name_of_filename fn =
   | _ -> None
 
 let persistent_structures_of_dir dir =
-  Load_path.Dir.files dir
+  Utils.Load_path.Dir.files dir
   |> List.to_seq
   |> Seq.filter_map unit_name_of_filename
   |> String.Set.of_seq
@@ -2604,11 +2604,11 @@ and lookup_module ~errors ~use ~loc lid env =
   match lid with
   | Lident s ->
       let path, data = lookup_ident_module Load ~errors ~use ~loc s env in
-      let md = Lazy_backtrack.force subst_modtype_maker data.mda_declaration in
+      let md = Utils.Lazy_backtrack.force subst_modtype_maker data.mda_declaration in
       path, md
   | Ldot(l, s) ->
       let path, data = lookup_dot_module ~errors ~use ~loc l s env in
-      let md = Lazy_backtrack.force subst_modtype_maker data.mda_declaration in
+      let md = Utils.Lazy_backtrack.force subst_modtype_maker data.mda_declaration in
       path, md
   | Lapply(l1, l2) ->
       let p1, fc, arg = lookup_functor_components ~errors ~use ~loc l1 env in
@@ -2714,7 +2714,7 @@ let lookup_all_dot_constructors ~errors ~use ~loc usage l s env =
 let lookup_module_path ~errors ~use ~loc ~load lid env : Path.t =
   match lid with
   | Lident s ->
-      if !Clflags.transparent_modules && not load then
+      if !Utils.Clflags.transparent_modules && not load then
         fst (lookup_ident_module Don't_load ~errors ~use ~loc s env)
       else
         fst (lookup_ident_module Load ~errors ~use ~loc s env)
@@ -2996,7 +2996,7 @@ let fold_modules f lid env acc =
            | Mod_unbound _ -> acc
            | Mod_local mda ->
                let md =
-                 Lazy_backtrack.force subst_modtype_maker mda.mda_declaration
+                 Utils.Lazy_backtrack.force subst_modtype_maker mda.mda_declaration
                in
                f name p md acc
            | Mod_persistent ->
@@ -3004,7 +3004,7 @@ let fold_modules f lid env acc =
                | None -> acc
                | Some mda ->
                    let md =
-                     Lazy_backtrack.force subst_modtype_maker
+                     Utils.Lazy_backtrack.force subst_modtype_maker
                        mda.mda_declaration
                    in
                    f name p md acc)
@@ -3020,7 +3020,7 @@ let fold_modules f lid env acc =
           NameMap.fold
             (fun s mda acc ->
                let md =
-                 Lazy_backtrack.force subst_modtype_maker mda.mda_declaration
+                 Utils.Lazy_backtrack.force subst_modtype_maker mda.mda_declaration
                in
                f s (Pdot (p, s)) md acc)
             c.comp_modules
@@ -3350,7 +3350,7 @@ let () =
 
 let check_state_consistency () =
   let missing modname =
-    match Load_path.find_uncap (modname ^ ".cmi") with
+    match Utils.Load_path.find_uncap (modname ^ ".cmi") with
     | _ -> false
     | exception Not_found -> true
   and found _modname filename ps_name _md =
@@ -3500,7 +3500,7 @@ and short_paths_module_components_desc env mpath comp =
       in
       let comps =
         String.Map.fold (fun name { mda_declaration; mda_components; _ } acc ->
-          let mty = Lazy_backtrack.force subst_modtype_maker mda_declaration in
+          let mty = Utils.Lazy_backtrack.force subst_modtype_maker mda_declaration in
           let mpath = Pdot(mpath, name) in
           let desc =
             short_paths_module_desc env mpath mty.md_type mda_components

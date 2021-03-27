@@ -254,7 +254,7 @@ module Uid : sig
 
   val for_actual_declaration : t -> bool
 
-  include Identifiable.S with type t := t
+  include Utils.Identifiable.S with type t := t
 end
 
 (* Maps of methods and instance variables *)

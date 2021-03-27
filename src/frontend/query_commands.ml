@@ -169,7 +169,7 @@ let dump pipeline = function
 
   | [`String "warnings"] ->
     let _typer = Mpipeline.typer_result pipeline in
-    Warnings.dump () (*TODO*)
+    Utils.Warnings.dump () (*TODO*)
 
   | [`String "exn"] ->
     let exns =

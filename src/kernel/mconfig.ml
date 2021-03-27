@@ -21,14 +21,14 @@ type ocaml = {
   open_modules         : string list;
   ppx                  : string with_workdir list;
   pp                   : string with_workdir option;
-  warnings             : Warnings.state;
+  warnings             : Utils.Warnings.state;
 }
 
 let dump_warnings st =
-  let st' = Warnings.backup () in
-  Warnings.restore st;
-  Misc.try_finally Warnings.dump
-    ~always:(fun () -> Warnings.restore st')
+  let st' = Utils.Warnings.backup () in
+  Utils.Warnings.restore st;
+  Misc.try_finally Utils.Warnings.dump
+    ~always:(fun () -> Utils.Warnings.restore st')
 
 let dump_ocaml x = `Assoc [
     "include_dirs"         , `List (List.map ~f:Json.string x.include_dirs);
@@ -393,12 +393,12 @@ let ocaml_ignored_parametrized_flags = [
 
 let ocaml_warnings_spec ~error =
   Marg.param "warning specification" (fun spec ocaml ->
-      let b' = Warnings.backup () in
-      Warnings.restore ocaml.warnings;
+      let b' = Utils.Warnings.backup () in
+      Utils.Warnings.restore ocaml.warnings;
       Misc.try_finally (fun () ->
-          Warnings.parse_options error spec;
-          { ocaml with warnings = Warnings.backup () })
-        ~always:(fun () -> Warnings.restore b'))
+          Utils.Warnings.parse_options error spec;
+          { ocaml with warnings = Utils.Warnings.backup () })
+        ~always:(fun () -> Utils.Warnings.restore b'))
 
 let ocaml_flags = [
   (
@@ -472,14 +472,14 @@ let ocaml_flags = [
     Marg.unit (fun ocaml -> {ocaml with unsafe_string = true}),
     Printf.sprintf
       " Make strings mutable (default: %B)"
-      (not Config.safe_string)
+      (not Utils.Config.safe_string)
   );
   (
     "-safe-string",
     Marg.unit (fun ocaml -> {ocaml with unsafe_string = false}),
     Printf.sprintf
       " Make strings immutable (default: %B)"
-      Config.safe_string
+      Utils.Config.safe_string
   );
   (
     "-nopervasives",
@@ -520,7 +520,7 @@ let ocaml_flags = [
       \        <num1>..<num2>    a range of consecutive warning numbers\n\
       \        <letter>          a predefined set\n\
       \     default setting is %S"
-      Warnings.defaults_w
+      Utils.Warnings.defaults_w
   );
   ( "-warn-error",
     ocaml_warnings_spec ~error:true,
@@ -528,7 +528,7 @@ let ocaml_flags = [
       "<list> Enable or disable error status for warnings according\n\
       \     to <list>.  See option -w for the syntax of <list>.\n\
       \     Default setting is %S"
-      Warnings.defaults_warn_error
+      Utils.Warnings.defaults_warn_error
   );
 ]
 
@@ -546,13 +546,13 @@ let initial = {
     recursive_types      = false;
     strict_sequence      = false;
     applicative_functors = true;
-    unsafe_string        = not Config.safe_string;
+    unsafe_string        = not Utils.Config.safe_string;
     nopervasives         = false;
     strict_formats       = false;
     open_modules         = [];
     ppx                  = [];
     pp                   = None;
-    warnings             = Warnings.backup ();
+    warnings             = Utils.Warnings.backup ();
   };
   merlin = {
     build_path  = [];

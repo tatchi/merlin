@@ -49,6 +49,8 @@ module Reader = struct
   end
 end
 
+module RealUtils = Utils
+
 module Utils = struct
 
   (* Postpone messages until ready *)
@@ -84,7 +86,7 @@ module Handshake = struct
     cmt_magic_number : string;
   }
 
-  let versions = Config.({
+  let versions = RealUtils.Config.({
       ast_impl_magic_number;
       ast_intf_magic_number;
       cmi_magic_number;

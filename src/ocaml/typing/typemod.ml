@@ -172,7 +172,7 @@ let initial_env ~loc ~safe_string ~initially_opened_module
       env
   in
   let units =
-    List.map Env.persistent_structures_of_dir (Load_path.get ())
+    List.map Env.persistent_structures_of_dir (Utils.Load_path.get ())
   in
   let env, units =
     match initially_opened_module with
@@ -857,7 +857,7 @@ and approx_modtype_info env sinfo =
   }
 
 let approx_modtype env smty =
-  Warnings.without_warnings
+  Utils.Warnings.without_warnings
     (fun () -> approx_modtype env smty)
 
 (* Auxiliaries for checking the validity of name shadowing in signatures and
@@ -1679,7 +1679,7 @@ and transl_recmodule_modtypes env sdecls =
   in
   let env0 = make_env init in
   let dcl1 =
-    Warnings.without_warnings
+    Utils.Warnings.without_warnings
       (fun () -> transition env0 init)
   in
   let env1 = make_env dcl1 in
@@ -1713,7 +1713,7 @@ exception Not_a_path
 let rec path_of_module mexp =
   match mexp.mod_desc with
   | Tmod_ident (p,_) -> p
-  | Tmod_apply(funct, arg, _coercion) when !Clflags.applicative_functors ->
+  | Tmod_apply(funct, arg, _coercion) when !Utils.Clflags.applicative_functors ->
       Papply(path_of_module funct, path_of_module arg)
   | Tmod_constraint (mexp, _, _, _) ->
       path_of_module mexp
@@ -2164,9 +2164,9 @@ and type_module_aux ~alias sttn funct_body anchor env smod =
       }
 
   | Pmod_unpack sexp ->
-      if !Clflags.principal then Ctype.begin_def ();
+      if !Utils.Clflags.principal then Ctype.begin_def ();
       let exp = Typecore.type_exp env sexp in
-      if !Clflags.principal then begin
+      if !Utils.Clflags.principal then begin
         Ctype.end_def ();
         Ctype.generalize_structure exp.exp_type
       end;
@@ -2176,11 +2176,11 @@ and type_module_aux ~alias sttn funct_body anchor env smod =
             if List.exists (fun t -> Ctype.free_variables t <> []) tl then
               raise (Error (smod.pmod_loc, env,
                             Incomplete_packed_module exp.exp_type));
-            if !Clflags.principal &&
+            if !Utils.Clflags.principal &&
               not (Typecore.generalizable (Btype.generic_level-1) exp.exp_type)
             then
               Location.prerr_warning smod.pmod_loc
-                (Warnings.Not_principal "this module unpacking");
+                (Utils.Warnings.Not_principal "this module unpacking");
             modtype_of_package env smod.pmod_loc p nl tl
         | {desc = Tvar _} ->
             raise (Typecore.Error
@@ -2763,12 +2763,12 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
   Misc.try_finally (fun () ->
       Typecore.reset_delayed_checks ();
       Env.reset_required_globals ();
-      if !Clflags.print_types then (* #7656 *)
-        Warnings.parse_options false "-32-34-37-38-60";
+      if !Utils.Clflags.print_types then (* #7656 *)
+        Utils.Warnings.parse_options false "-32-34-37-38-60";
       let (str, sg, names, finalenv) =
         type_structure initial_env ast in
       let simple_sg = Signature_names.simplify finalenv names sg in
-      if !Clflags.print_types then begin
+      if !Utils.Clflags.print_types then begin
         Typecore.force_delayed_checks ();
         Printtyp.wrap_printing_env ~error:false initial_env
           (fun () -> fprintf std_formatter "%a@."
@@ -2777,11 +2777,11 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
         (str, Tcoerce_none)   (* result is ignored by Compile.implementation *)
       end else begin
         let sourceintf =
-          Filename.remove_extension sourcefile ^ !Config.interface_suffix in
+          Filename.remove_extension sourcefile ^ !Utils.Config.interface_suffix in
         if Sys.file_exists sourceintf then begin
           let intf_file =
             try
-              Load_path.find_uncap (modulename ^ ".cmi")
+              Utils.Load_path.find_uncap (modulename ^ ".cmi")
             with Not_found ->
               raise(Error(Location.in_file sourcefile, Env.empty,
                           Interface_not_compiled sourceintf)) in
@@ -2810,7 +2810,7 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
              the value being exported. We can still capture unused
              declarations like "let x = true;; let x = 1;;", because in this
              case, the inferred signature contains only the last declaration. *)
-          if not !Clflags.dont_write_files then begin
+          if not !Utils.Clflags.dont_write_files then begin
             let alerts = Builtin_attributes.alerts_of_str ast in
             let cmi =
               Env.save_signature ~alerts
@@ -2892,7 +2892,7 @@ let package_units initial_env objfiles cmifile modulename =
   let sg = package_signatures units in
   (* See if explicit interface is provided *)
   let prefix = Filename.remove_extension cmifile in
-  let mlifile = prefix ^ !Config.interface_suffix in
+  let mlifile = prefix ^ !Utils.Config.interface_suffix in
   if Sys.file_exists mlifile then begin
     if not (Sys.file_exists cmifile) then begin
       raise(Error(Location.in_file mlifile, Env.empty,
@@ -2911,7 +2911,7 @@ let package_units initial_env objfiles cmifile modulename =
         (fun (name, _crc) -> not (List.mem name unit_names))
         (Env.imports()) in
     (* Write packaged signature *)
-    if not !Clflags.dont_write_files then begin
+    if not !Utils.Clflags.dont_write_files then begin
       let cmi =
         Env.save_signature_with_imports ~alerts:Misc.String.Map.empty
           sg modulename

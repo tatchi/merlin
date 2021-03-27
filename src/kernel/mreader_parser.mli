@@ -33,7 +33,7 @@ type kind =
 
 type t
 
-val make : Warnings.state -> Mreader_lexer.t -> kind -> t
+val make : Utils.Warnings.state -> Mreader_lexer.t -> kind -> t
 
 type tree = [
   | `Interface of Parsetree.signature

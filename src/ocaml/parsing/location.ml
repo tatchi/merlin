@@ -15,7 +15,7 @@
 
 open Lexing
 
-type t = Warnings.loc =
+type t = Utils.Warnings.loc =
   { loc_start: position; loc_end: position; loc_ghost: bool };;
 
 let in_file name =
@@ -700,7 +700,7 @@ let error_of_printer_file ?source print x =
 let default_warning_alert_reporter ?(source = Typer) report mk (loc: t) w : report option =
   match report w with
   | `Inactive -> None
-  | `Active { Warnings.id; message; is_error; sub_locs } ->
+  | `Active Utils.{ Warnings.id; message; is_error; sub_locs } ->
       let msg_of_str str = fun ppf -> Format.pp_print_string ppf str in
       let kind = mk is_error id in
       let main = { loc; txt = msg_of_str message } in
@@ -712,7 +712,7 @@ let default_warning_alert_reporter ?(source = Typer) report mk (loc: t) w : repo
 
 let default_warning_reporter =
   default_warning_alert_reporter
-    Warnings.report
+    Utils.Warnings.report
     (fun is_error id ->
        if is_error then Report_warning_as_error id
        else Report_warning id
@@ -734,7 +734,7 @@ let prerr_warning loc w = !prerr_warning_ref loc w
 
 let default_alert_reporter =
   default_warning_alert_reporter
-    Warnings.report_alert
+  Utils.Warnings.report_alert
     (fun is_error id ->
        if is_error then Report_alert_as_error id
        else Report_alert id
@@ -754,7 +754,7 @@ let prerr_alert_ref =
 let prerr_alert loc w = !prerr_alert_ref loc w
 
 let alert ?(def = none) ?(use = none) ~kind loc message =
-  prerr_alert loc {Warnings.kind; message; def; use}
+  prerr_alert loc {Utils.Warnings.kind; message; def; use}
 
 let deprecated ?def ?use loc message =
   alert ?def ?use ~kind:"deprecated" loc message
@@ -766,7 +766,7 @@ let error_of_exn : (exn -> error option) list ref = ref []
 
 let register_error_of_exn f = error_of_exn := f :: !error_of_exn
 
-exception Already_displayed_error = Warnings.Errors
+exception Already_displayed_error = Utils.Warnings.Errors
 
 let error_of_exn exn =
   match exn with

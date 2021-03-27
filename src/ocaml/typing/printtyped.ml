@@ -27,7 +27,7 @@ let fmt_position f l =
 ;;
 
 let fmt_location f loc =
-  if not !Clflags.locations then ()
+  if not !Utils.Clflags.locations then ()
   else begin
     fprintf f "(%a..%a)" fmt_position loc.loc_start fmt_position loc.loc_end;
     if loc.loc_ghost then fprintf f " ghost";

@@ -563,7 +563,7 @@ let same_type t t' = repr t == repr t'
 
 let set_printing_env env =
   printing_env :=
-    if !Clflags.real_paths then Env.empty
+    if !Utils.Clflags.real_paths then Env.empty
     else env
 
 let wrap_printing_env env f =
@@ -595,37 +595,37 @@ let apply_nth n args =
   List.nth args n
 
 let best_type_path p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then Path(None, p)
   else Short_paths.find_type (Env.short_paths !printing_env) p
 
 let best_type_path_resolution p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then Id
   else Short_paths.find_type_resolution (Env.short_paths !printing_env) p
 
 let best_type_path_simple p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then p
   else Short_paths.find_type_simple (Env.short_paths !printing_env) p
 
 let best_module_type_path p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then p
   else Short_paths.find_module_type (Env.short_paths !printing_env) p
 
 let best_module_path p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then p
   else Short_paths.find_module (Env.short_paths !printing_env) p
 
 let best_class_type_path p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then None, p
   else Short_paths.find_class_type (Env.short_paths !printing_env) p
 
 let best_class_type_path_simple p =
-  if !Clflags.real_paths || !printing_env == Env.empty
+  if !Utils.Clflags.real_paths || !printing_env == Env.empty
   then p
   else Short_paths.find_class_type_simple (Env.short_paths !printing_env) p
 
@@ -1518,7 +1518,7 @@ let hide ids env = List.fold_right
 
 let hide_rec_items = function
   | Sig_type(id, _decl, rs, _) ::rem
-    when rs = Trec_first && not !Clflags.real_paths ->
+    when rs = Trec_first && not !Utils.Clflags.real_paths ->
       let rec get_ids = function
           Sig_type (id, _, Trec_next, _) :: rem ->
             id :: get_ids rem
@@ -1692,13 +1692,13 @@ let printed_signature sourcefile ppf sg =
   Conflicts.reset ();
   reset_naming_context ();
   let t = tree_of_signature sg in
-  if Warnings.(is_active @@ Erroneous_printed_signature "")
+  if Utils.Warnings.(is_active @@ Erroneous_printed_signature "")
   && Conflicts.exists ()
   then begin
     let conflicts = Format.asprintf "%t" Conflicts.print_explanations in
     Location.prerr_warning (Location.in_file sourcefile)
-      (Warnings.Erroneous_printed_signature conflicts);
-    Warnings.check_fatal ()
+      (Utils.Warnings.Erroneous_printed_signature conflicts);
+      Utils.Warnings.check_fatal ()
   end;
   fprintf ppf "%a" print_signature t
 
@@ -2027,7 +2027,7 @@ let unification_error env tr txt1 ppf txt2 ty_expect_explanation =
   | [] -> assert false
   | elt :: tr ->
     try
-      print_labels := not !Clflags.classic;
+      print_labels := not !Utils.Clflags.classic;
       let tr = filter_trace (mis = None) tr in
       let head = prepare_expansion_head (tr=[]) elt in
       let tr = List.map (Trace.map_diff prepare_expansion) tr in
@@ -2059,7 +2059,7 @@ let report_unification_error ppf env tr
 
 (** [trace] requires the trace to be prepared *)
 let trace fst keep_last txt ppf tr =
-  print_labels := not !Clflags.classic;
+  print_labels := not !Utils.Clflags.classic;
   try match tr with
     | elt :: tr' ->
         let elt = match elt with

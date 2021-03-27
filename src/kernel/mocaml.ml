@@ -1,21 +1,21 @@
 open Std
-open Local_store
+open Utils.Local_store
 
 (* Instance of environment cache & btype unification log  *)
 
-type typer_state = Local_store.store
+type typer_state = Utils.Local_store.store
 
 let current_state = s_ref None
 
 let new_state () =
-  let store = Local_store.fresh () in
-  Local_store.with_store store (fun () -> current_state := Some store);
+  let store = Utils.Local_store.fresh () in
+  Utils.Local_store.with_store store (fun () -> current_state := Some store);
   store
 
 let with_state state f =
-  if Local_store.is_bound () then
+  if Utils.Local_store.is_bound () then
     failwith "Mocaml.with_state: another instance is already in use";
-  match Local_store.with_store state f with
+  match Utils.Local_store.with_store state f with
   | r -> Cmt_format.clear (); r
   | exception exn -> Cmt_format.clear (); reraise exn
 
@@ -26,11 +26,11 @@ let is_current_state state = match !current_state with
 (* Build settings *)
 
 let setup_config config = (
-  assert Local_store.(is_bound ());
+  assert Utils.Local_store.(is_bound ());
   let open Mconfig in
-  let open Clflags in
+  let open Utils.Clflags in
   let ocaml = config.ocaml in
-  Load_path.init (Mconfig.build_path config);
+  Utils.Load_path.init (Mconfig.build_path config);
   Env.set_unit_name (Mconfig.unitname config);
   Location.input_name  := config.query.filename;
   fast                 := ocaml.unsafe ;
@@ -101,7 +101,7 @@ let with_printer printer f =
 let clear_caches () = (
   Cmi_cache.clear ();
   Cmt_cache.clear ();
-  Directory_content_cache.clear ();
+  Utils.Directory_content_cache.clear ();
 )
 
 (* Flush cache *)

@@ -20,7 +20,7 @@ open Asttypes
 open Types
 open Btype
 
-open Local_store
+open Utils.Local_store
 
 (*
    Type manipulation after type inference
@@ -266,7 +266,7 @@ let wrap_trace_gadt_instances env f x =
 let simple_abbrevs = ref Mnil
 
 let proper_abbrevs path tl abbrev =
-  if tl <> [] || !trace_gadt_instances || !Clflags.principal ||
+  if tl <> [] || !trace_gadt_instances || !Utils.Clflags.principal ||
      is_object_type path
   then abbrev
   else simple_abbrevs
@@ -1844,7 +1844,7 @@ let merge r b = if b then r := true
 
 let occur env ty0 ty =
   let allow_recursive =
-    !Clflags.recursive_types || !umode = Pattern && !allow_recursive_equation in
+    !Utils.Clflags.recursive_types || !umode = Pattern && !allow_recursive_equation in
   let old = !type_changed in
   try
     while
@@ -1902,7 +1902,7 @@ let rec local_non_recursive_abbrev ~allow_rec strict visited env p ty =
 
 let local_non_recursive_abbrev env p ty =
   let allow_rec =
-    !Clflags.recursive_types || !umode = Pattern && !allow_recursive_equation in
+    !Utils.Clflags.recursive_types || !umode = Pattern && !allow_recursive_equation in
   try (* PR#7397: need to check trace_gadt_instances *)
     wrap_trace_gadt_instances env
       (local_non_recursive_abbrev ~allow_rec false [] env p) ty;
@@ -2666,7 +2666,7 @@ and unify2 env t1 t2 =
 
   let t1 = repr t1 and t2 = repr t2 in
   let t1, t2 =
-    if !Clflags.principal
+    if !Utils.Clflags.principal
     && (find_lowest_level t1' < lv || find_lowest_level t2' < lv) then
       (* Expand abbreviations hiding a lower level *)
       (* Should also do it for parameterized types, after unification... *)
@@ -2713,7 +2713,7 @@ and unify3 env t1 t1' t2 t2' =
     try
       begin match (d1, d2) with
         (Tarrow (l1, t1, u1, c1), Tarrow (l2, t2, u2, c2)) when l1 = l2 ||
-        (!Clflags.classic || !umode = Pattern) &&
+        (!Utils.Clflags.classic || !umode = Pattern) &&
         not (is_optional l1 || is_optional l2) ->
           unify  env t1 t2; unify env  u1 u2;
           begin match commu_repr c1, commu_repr c2 with
@@ -3202,7 +3202,7 @@ let filter_arrow env t l =
       link_type t t';
       (t1, t2)
   | Tarrow(l', t1, t2, _)
-    when l = l' || !Clflags.classic && l = Nolabel && not (is_optional l') ->
+    when l = l' || !Utils.Clflags.classic && l = Nolabel && not (is_optional l') ->
       (t1, t2)
   | _ ->
       raise (Unify [])
@@ -3324,7 +3324,7 @@ let rec moregen inst_nongen type_pairs env t1 t2 =
               update_scope t1'.scope t2;
               link_type t1' t2
           | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
-            || !Clflags.classic && not (is_optional l1 || is_optional l2) ->
+            || !Utils.Clflags.classic && not (is_optional l1 || is_optional l2) ->
               moregen inst_nongen type_pairs env t1 t2;
               moregen inst_nongen type_pairs env u1 u2
           | (Ttuple tl1, Ttuple tl2) ->
@@ -3596,7 +3596,7 @@ let rec eqtype rename type_pairs subst env t1 t2 =
                 subst := (t1', t2') :: !subst
               end
           | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
-            || !Clflags.classic && not (is_optional l1 || is_optional l2) ->
+            || !Utils.Clflags.classic && not (is_optional l1 || is_optional l2) ->
               eqtype rename type_pairs subst env t1 t2;
               eqtype rename type_pairs subst env u1 u2;
           | (Ttuple tl1, Ttuple tl2) ->
@@ -4272,7 +4272,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
       (Tvar _, _) | (_, Tvar _) ->
         (trace, t1, t2, !univar_pairs)::cstrs
     | (Tarrow(l1, t1, u1, _), Tarrow(l2, t2, u2, _)) when l1 = l2
-      || !Clflags.classic && not (is_optional l1 || is_optional l2) ->
+      || !Utils.Clflags.classic && not (is_optional l1 || is_optional l2) ->
         let cstrs = subtype_rec env (Trace.diff t2 t1::trace) t2 t1 cstrs in
         subtype_rec env (Trace.diff u1 u2::trace) u1 u2 cstrs
     | (Ttuple tl1, Ttuple tl2) ->
@@ -4897,7 +4897,7 @@ let is_immediate = function
   | Type_immediacy.Always_on_64bits ->
       (* In bytecode, we don't know at compile time whether we are
          targeting 32 or 64 bits. *)
-      !Clflags.native_code && Sys.word_size = 64
+      !Utils.Clflags.native_code && Sys.word_size = 64
 
 let immediacy env typ =
    match (repr typ).desc with

@@ -19,7 +19,7 @@
 open Misc
 open Cmi_format
 
-module Consistbl = Consistbl.Make (Misc.String)
+module Consistbl = Utils.Consistbl.Make (Misc.String)
 
 let add_delayed_check_forward = ref (fun _ -> assert false)
 
@@ -32,13 +32,14 @@ type error =
 exception Error of error
 let error err = raise (Error err)
 
+
 module Persistent_signature = struct
   type t =
     { filename : string;
       cmi : Cmi_format.cmi_infos }
 
   let load = ref (fun ~unit_name ->
-      match Load_path.find_uncap (unit_name ^ ".cmi") with
+      match Utils.Load_path.find_uncap (unit_name ^ ".cmi") with
       | filename ->
         let cmi = Cmi_cache.read filename in
         Some { filename; cmi }
@@ -47,7 +48,7 @@ end
 
 type can_load_cmis =
   | Can_load_cmis
-  | Cannot_load_cmis of Lazy_backtrack.log
+  | Cannot_load_cmis of Utils.Lazy_backtrack.log
 
 type pers_struct = {
   ps_name: string;
@@ -146,13 +147,13 @@ let short_paths_basis penv =
   !(penv.short_paths_basis)
 
 let without_cmis penv f x =
-  let log = Lazy_backtrack.log () in
+  let log = Utils.Lazy_backtrack.log () in
   let res =
     Misc.(protect_refs
             [R (penv.can_load_cmis, Cannot_load_cmis log)]
             (fun () -> f x))
   in
-  Lazy_backtrack.backtrack log;
+  Utils.Lazy_backtrack.backtrack log;
   res
 
 let fold {persistent_structures; _} f x =
@@ -220,10 +221,10 @@ let acknowledge_pers_struct penv short_path_comps check modname pers_sig pm =
   List.iter
     (function
         | Rectypes ->
-            if not !Clflags.recursive_types then
+            if not !Utils.Clflags.recursive_types then
               error (Need_recursive_types(ps.ps_name))
         | Unsafe_string ->
-            if Config.safe_string then
+            if Utils.Config.safe_string then
               error (Depend_on_unsafe_string_unit(ps.ps_name));
         | Alerts _ -> ()
         | Opaque -> register_import_as_opaque penv modname)
@@ -270,11 +271,11 @@ let check_pers_struct penv f1 f2 ~loc name =
     ignore (find_pers_struct penv f1 f2 false name)
   with
   | Not_found ->
-      let warn = Warnings.No_cmi_file(name, None) in
+      let warn = Utils.Warnings.No_cmi_file(name, None) in
         Location.prerr_warning loc warn
   | Magic_numbers.Cmi.Error err ->
       let msg = Format.asprintf "%a" Magic_numbers.Cmi.report_error err in
-      let warn = Warnings.No_cmi_file(name, Some msg) in
+      let warn = Utils.Warnings.No_cmi_file(name, Some msg) in
         Location.prerr_warning loc warn
   | Error err ->
       let msg =
@@ -293,7 +294,7 @@ let check_pers_struct penv f1 f2 ~loc name =
             Printf.sprintf "%s uses -unsafe-string"
               name
       in
-      let warn = Warnings.No_cmi_file(name, Some msg) in
+      let warn = Utils.Warnings.No_cmi_file(name, Some msg) in
         Location.prerr_warning loc warn
 
 let read penv f1 f2 modname filename =
@@ -309,7 +310,7 @@ let check penv f1 f2 ~loc name =
        whether the check succeeds, to help make builds more
        deterministic. *)
     add_import penv name;
-    if (Warnings.is_active (Warnings.No_cmi_file("", None))) then
+    if (Utils.Warnings.is_active (Utils.Warnings.No_cmi_file("", None))) then
       !add_delayed_check_forward
         (fun () -> check_pers_struct penv f1 f2 ~loc name)
   end
@@ -341,9 +342,9 @@ let is_imported_opaque {imported_opaque_units; _} s =
 let make_cmi penv modname sign alerts =
   let flags =
     List.concat [
-      if !Clflags.recursive_types then [Cmi_format.Rectypes] else [];
-      if !Clflags.opaque then [Cmi_format.Opaque] else [];
-      (if !Clflags.unsafe_string then [Cmi_format.Unsafe_string] else []);
+      if !Utils.Clflags.recursive_types then [Cmi_format.Rectypes] else [];
+      if !Utils.Clflags.opaque then [Cmi_format.Opaque] else [];
+      (if !Utils.Clflags.unsafe_string then [Cmi_format.Unsafe_string] else []);
       [Alerts alerts];
     ]
   in

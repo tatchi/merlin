@@ -51,13 +51,13 @@ let read_cmi filename =
   let ic = open_in_bin filename in
   try
     let buffer =
-      really_input_string ic (String.length Config.cmi_magic_number)
+      really_input_string ic (String.length Utils.Config.cmi_magic_number)
     in
-    if buffer <> Config.cmi_magic_number then begin
+    if buffer <> Utils.Config.cmi_magic_number then begin
       close_in ic;
-      let pre_len = String.length Config.cmi_magic_number - 3 in
+      let pre_len = String.length Utils.Config.cmi_magic_number - 3 in
       if String.sub buffer 0 pre_len
-          = String.sub Config.cmi_magic_number 0 pre_len then
+          = String.sub Utils.Config.cmi_magic_number 0 pre_len then
       begin
         raise (Error (Wrong_version_interface (filename, buffer)))
       end else begin
@@ -76,7 +76,7 @@ let read_cmi filename =
 
 let output_cmi filename oc cmi =
 (* beware: the provided signature must have been substituted for saving *)
-  output_string oc Config.cmi_magic_number;
+  output_string oc Utils.Config.cmi_magic_number;
   output_value oc ((cmi.cmi_name, cmi.cmi_sign) : header);
   flush oc;
   let crc = Digest.file filename in

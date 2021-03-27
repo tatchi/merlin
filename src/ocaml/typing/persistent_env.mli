@@ -17,7 +17,7 @@
 open Misc
 
 module Consistbl : module type of struct
-  include Consistbl.Make (Misc.String)
+  include Utils.Consistbl.Make (Misc.String)
 end
 
 type error =
@@ -43,7 +43,7 @@ end
 
 type can_load_cmis =
   | Can_load_cmis
-  | Cannot_load_cmis of Lazy_backtrack.log
+  | Cannot_load_cmis of Utils.Lazy_backtrack.log
 
 type 'a t
 

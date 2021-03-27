@@ -120,7 +120,7 @@ let apply_rewriters_str ~ppx ?(restore = true) ~tool_name ast =
   | [] -> ast
   | ppxs ->
       let ast = Ast_mapper.add_ppx_context_str ~tool_name ast in
-      let ast = rewrite Config.ast_impl_magic_number ast ppxs in
+      let ast = rewrite Utils.Config.ast_impl_magic_number ast ppxs in
       Ast_mapper.drop_ppx_context_str ~restore ast
 
 let apply_rewriters_sig ~ppx ?(restore = true) ~tool_name ast =
@@ -128,7 +128,7 @@ let apply_rewriters_sig ~ppx ?(restore = true) ~tool_name ast =
   | [] -> ast
   | ppxs ->
       let ast = Ast_mapper.add_ppx_context_sig ~tool_name ast in
-      let ast = rewrite Config.ast_intf_magic_number ast ppxs in
+      let ast = rewrite Utils.Config.ast_intf_magic_number ast ppxs in
       Ast_mapper.drop_ppx_context_sig ~restore ast
 
 let apply_rewriters ~ppx ?restore ~tool_name = function

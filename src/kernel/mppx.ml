@@ -13,9 +13,9 @@ let change_directory dir =
 
 
 let with_include_dir path f =
-  let saved = !Clflags.include_dirs in
-  let restore () = Clflags.include_dirs := saved in
-  Clflags.include_dirs := path;
+  let saved = !Utils.Clflags.include_dirs in
+  let restore () = Utils.Clflags.include_dirs := saved in
+  Utils.Clflags.include_dirs := path;
   let result =
     begin
       try

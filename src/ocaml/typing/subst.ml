@@ -20,7 +20,7 @@ open Path
 open Types
 open Btype
 
-open Local_store
+open Utils.Local_store
 
 type type_replacement =
   | Path of Path.t
@@ -57,7 +57,7 @@ let for_saving s = { s with for_saving = true }
 let make_loc_ghost s = { s with make_loc_ghost = true }
 
 let loc s x =
-  if s.for_saving && not !Clflags.keep_locs then Location.none
+  if s.for_saving && not !Utils.Clflags.keep_locs then Location.none
   else if s.make_loc_ghost then { x with loc_ghost = true }
   else x
 
@@ -74,11 +74,11 @@ let is_not_doc = function
 
 let attrs s x =
   let x =
-    if s.for_saving && not !Clflags.keep_docs then
+    if s.for_saving && not !Utils.Clflags.keep_docs then
       List.filter is_not_doc x
     else x
   in
-    if s.for_saving && not !Clflags.keep_locs
+    if s.for_saving && not !Utils.Clflags.keep_locs
     then remove_loc.Ast_mapper.attributes remove_loc x
     else x
 
