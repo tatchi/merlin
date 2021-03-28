@@ -1,5 +1,6 @@
 module P = Extend_protocol
 module R = P.Reader
+module Merlin_Utils = Utils
 
 module Description = struct
   type t = P.description
@@ -84,7 +85,7 @@ module Handshake = struct
     cmt_magic_number : string;
   }
 
-  let versions = Config.({
+  let versions = Merlin_Utils.Config.({
       ast_impl_magic_number;
       ast_intf_magic_number;
       cmi_magic_number;

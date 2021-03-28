@@ -5,6 +5,6 @@
   (name parsing)
   (public_name merlin.parsing)
   (wrapped false)
-  (flags -open Merlin_utils (:standard -w -9))
+  (flags -open Merlin_utils -open Utils (:standard -w -9))
   (modules_without_implementation asttypes parsetree)
   (libraries merlin_utils utils))

@@ -4,7 +4,7 @@
   (name preprocess)
   (public_name merlin.preprocess)
   (wrapped false)
-  (flags -open Merlin_utils)
+  (flags -open Merlin_utils -open Utils)
   (libraries parsing utils merlin_utils))
 
 (menhir

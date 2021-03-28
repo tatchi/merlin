@@ -2,5 +2,5 @@
   (name merlin_specific)
   (public_name merlin.specific)
   (wrapped false)
-  (flags -open Merlin_utils)
+  (flags -open Merlin_utils -open Utils)
   (libraries merlin_utils parsing preprocess typing utils))
