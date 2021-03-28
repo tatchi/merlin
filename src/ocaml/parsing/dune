@@ -2,9 +2,8 @@
 (rule (copy# ../../extend/extend_helper.mli extend_helper.mli))
 
 (library
-  (name parsing)
+  (name merlin_parsing)
   (public_name merlin.parsing)
-  (wrapped false)
   (flags -open Merlin_utils -open Utils (:standard -w -9))
   (modules_without_implementation asttypes parsetree)
   (libraries merlin_utils utils))

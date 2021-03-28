@@ -1,6 +1,6 @@
 (library
  (name merlin_analysis)
- (flags -open Merlin_utils)
+ (flags -open Merlin_utils -open Merlin_parsing)
  (public_name merlin.analysis)
  (libraries
   config
@@ -8,7 +8,7 @@
   merlin_extend
   merlin_kernel
   merlin_utils
-  parsing
+  merlin_parsing
   preprocess
   query_protocol
   typing

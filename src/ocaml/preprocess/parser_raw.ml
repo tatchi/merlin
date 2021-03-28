@@ -6251,7 +6251,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let bs : (Parsetree.class_type_declaration list) = Obj.magic bs in
+        let bs : (Parsetree.class_type Parsetree.class_infos list) = Obj.magic bs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let csig : (Parsetree.class_type) = Obj.magic csig in
         let _8 : unit = Obj.magic _8 in
@@ -13723,9 +13723,9 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined2_ in
-        let _v : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = let attrs =
+        let _v : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = let attrs =
           let _1 = _1_inlined2 in
           
 # 3930 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -13792,9 +13792,9 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined1_ in
-        let _v : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = let attrs =
+        let _v : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = let attrs =
           let _1 = _1_inlined1 in
           
 # 3930 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -13897,7 +13897,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let _2 : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic _2 in
         let _1_inlined3 : unit = Obj.magic _1_inlined3 in
         let _1_inlined2 : (
@@ -14059,7 +14059,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined5 : (Parsetree.attributes) = Obj.magic _1_inlined5 in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let _2 : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic _2 in
         let _1_inlined4 : unit = Obj.magic _1_inlined4 in
         let _1_inlined3 : (
@@ -14216,7 +14216,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let kind_priv_manifest : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic kind_priv_manifest in
         let _1_inlined2 : (
 # 731 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -14363,7 +14363,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let kind_priv_manifest : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic kind_priv_manifest in
         let _1_inlined3 : (
 # 731 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -16768,7 +16768,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _endpos = _startpos in
-        let _v : (Parsetree.class_declaration list) = 
+        let _v : (Parsetree.class_expr Parsetree.class_infos list) = 
 # 211 "<standard.mly>"
     ( [] )
 # 16775 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.ml"
@@ -16831,7 +16831,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let xs : (Parsetree.class_declaration list) = Obj.magic xs in
+        let xs : (Parsetree.class_expr Parsetree.class_infos list) = Obj.magic xs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let body : (Parsetree.class_expr) = Obj.magic body in
         let _1_inlined2 : (
@@ -16846,7 +16846,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_xs_ in
-        let _v : (Parsetree.class_declaration list) = let x =
+        let _v : (Parsetree.class_expr Parsetree.class_infos list) = let x =
           let attrs2 =
             let _1 = _1_inlined3 in
             
@@ -16908,7 +16908,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _endpos = _startpos in
-        let _v : (Parsetree.class_description list) = 
+        let _v : (Parsetree.class_type Parsetree.class_infos list) = 
 # 211 "<standard.mly>"
     ( [] )
 # 16915 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.ml"
@@ -16977,7 +16977,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let xs : (Parsetree.class_description list) = Obj.magic xs in
+        let xs : (Parsetree.class_type Parsetree.class_infos list) = Obj.magic xs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let cty : (Parsetree.class_type) = Obj.magic cty in
         let _6 : unit = Obj.magic _6 in
@@ -16993,7 +16993,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_xs_ in
-        let _v : (Parsetree.class_description list) = let x =
+        let _v : (Parsetree.class_type Parsetree.class_infos list) = let x =
           let attrs2 =
             let _1 = _1_inlined3 in
             
@@ -17055,7 +17055,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _endpos = _startpos in
-        let _v : (Parsetree.class_type_declaration list) = 
+        let _v : (Parsetree.class_type Parsetree.class_infos list) = 
 # 211 "<standard.mly>"
     ( [] )
 # 17062 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.ml"
@@ -17124,7 +17124,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let xs : (Parsetree.class_type_declaration list) = Obj.magic xs in
+        let xs : (Parsetree.class_type Parsetree.class_infos list) = Obj.magic xs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let csig : (Parsetree.class_type) = Obj.magic csig in
         let _6 : unit = Obj.magic _6 in
@@ -17140,7 +17140,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_xs_ in
-        let _v : (Parsetree.class_type_declaration list) = let x =
+        let _v : (Parsetree.class_type Parsetree.class_infos list) = let x =
           let attrs2 =
             let _1 = _1_inlined3 in
             
@@ -17568,7 +17568,7 @@ module Tables = struct
         } = _menhir_stack in
         let xs : (Parsetree.type_declaration list) = Obj.magic xs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
-        let xs_inlined1 : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs_inlined1 in
+        let xs_inlined1 : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs_inlined1 in
         let kind_priv_manifest : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic kind_priv_manifest in
         let _1_inlined2 : (
 # 731 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -17735,7 +17735,7 @@ module Tables = struct
         } = _menhir_stack in
         let xs : (Parsetree.type_declaration list) = Obj.magic xs in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let xs_inlined1 : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs_inlined1 in
+        let xs_inlined1 : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs_inlined1 in
         let _2 : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) = Obj.magic _2 in
         let _1_inlined3 : unit = Obj.magic _1_inlined3 in
         let _1_inlined2 : (
@@ -23991,7 +23991,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined2_ in
-        let _v : (Parsetree.open_declaration * string Location.loc option) = let attrs2 =
+        let _v : (Parsetree.module_expr Parsetree.open_infos * string Location.loc option) = let attrs2 =
           let _1 = _1_inlined2 in
           
 # 3926 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -24081,7 +24081,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined3_ in
-        let _v : (Parsetree.open_declaration * string Location.loc option) = let attrs2 =
+        let _v : (Parsetree.module_expr Parsetree.open_infos * string Location.loc option) = let attrs2 =
           let _1 = _1_inlined3 in
           
 # 3926 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -24167,7 +24167,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined3_ in
-        let _v : (Parsetree.open_description * string Location.loc option) = let attrs2 =
+        let _v : (Longident.t Location.loc Parsetree.open_infos * string Location.loc option) = let attrs2 =
           let _1 = _1_inlined3 in
           
 # 3926 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -24268,7 +24268,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined4_ in
-        let _v : (Parsetree.open_description * string Location.loc option) = let attrs2 =
+        let _v : (Longident.t Location.loc Parsetree.open_infos * string Location.loc option) = let attrs2 =
           let _1 = _1_inlined4 in
           
 # 3926 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
@@ -28763,9 +28763,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -28798,9 +28798,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -28839,9 +28839,9 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let xs : (Parsetree.constructor_declaration list) = Obj.magic xs in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_xs_ in
@@ -28875,9 +28875,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -28947,9 +28947,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -29025,9 +29025,9 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_xs_ in
@@ -29105,9 +29105,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -29140,9 +29140,9 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_d_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_d_ in
         let _endpos = _endpos_d_ in
@@ -29181,9 +29181,9 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let d : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) = Obj.magic d in
+        let d : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) = Obj.magic d in
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_xs_ in
@@ -29214,7 +29214,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _endpos = _startpos in
-        let _v : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = 
+        let _v : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = 
 # 993 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.mly"
     ( [] )
 # 29221 "ocaml-lsp-server/vendor/merlin/src/ocaml/preprocess/parser_raw.ml"
@@ -29263,11 +29263,11 @@ module Tables = struct
         let _2 : unit = Obj.magic _2 in
         let _1_inlined1 : (Parsetree.core_type) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_xs_ in
         let _endpos = _endpos__3_ in
-        let _v : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = let x =
+        let _v : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = let x =
           let x =
             let (_startpos__1_, _1) = (_startpos__1_inlined1_, _1_inlined1) in
             let _endpos = _endpos__3_ in
@@ -32634,7 +32634,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Parsetree.open_description * string Location.loc option) = Obj.magic _1 in
+        let _1 : (Longident.t Location.loc Parsetree.open_infos * string Location.loc option) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -32831,7 +32831,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let bs : (Parsetree.class_description list) = Obj.magic bs in
+        let bs : (Parsetree.class_type Parsetree.class_infos list) = Obj.magic bs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let cty : (Parsetree.class_type) = Obj.magic cty in
         let _7 : unit = Obj.magic _7 in
@@ -40304,7 +40304,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Parsetree.open_declaration * string Location.loc option) = Obj.magic _1 in
+        let _1 : (Parsetree.module_expr Parsetree.open_infos * string Location.loc option) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -40392,7 +40392,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let bs : (Parsetree.class_declaration list) = Obj.magic bs in
+        let bs : (Parsetree.class_expr Parsetree.class_infos list) = Obj.magic bs in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
         let body : (Parsetree.class_expr) = Obj.magic body in
         let _1_inlined2 : (
@@ -43446,7 +43446,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let xs : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) = Obj.magic xs in
+        let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let _1_inlined2 : (Parsetree.core_type) = Obj.magic _1_inlined2 in
         let _4 : (Asttypes.private_flag) = Obj.magic _4 in
         let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
@@ -44091,7 +44091,7 @@ module MenhirInterpreter = struct
       | N_reversed_nonempty_llist_name_tag_ : (string list) nonterminal
       | N_reversed_nonempty_llist_labeled_simple_expr_ : ((Asttypes.arg_label * Parsetree.expression) list) nonterminal
       | N_reversed_nonempty_llist_functor_arg_ : ((Lexing.position * Parsetree.functor_parameter) list) nonterminal
-      | N_reversed_llist_preceded_CONSTRAINT_constrain__ : ((Parsetree.core_type * Parsetree.core_type * Location.t) list) nonterminal
+      | N_reversed_llist_preceded_CONSTRAINT_constrain__ : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) nonterminal
       | N_reversed_bar_llist_extension_constructor_declaration_ : (Parsetree.extension_constructor list) nonterminal
       | N_reversed_bar_llist_extension_constructor_ : (Parsetree.extension_constructor list) nonterminal
       | N_reversed_bar_llist_constructor_declaration_ : (Parsetree.constructor_declaration list) nonterminal
@@ -44133,8 +44133,8 @@ module MenhirInterpreter = struct
       | N_option_BAR_ : (unit option) nonterminal
       | N_opt_ampersand : (bool) nonterminal
       | N_operator : (string) nonterminal
-      | N_open_description : (Parsetree.open_description * string Location.loc option) nonterminal
-      | N_open_declaration : (Parsetree.open_declaration * string Location.loc option) nonterminal
+      | N_open_description : (Longident.t Location.loc Parsetree.open_infos * string Location.loc option) nonterminal
+      | N_open_declaration : (Parsetree.module_expr Parsetree.open_infos * string Location.loc option) nonterminal
       | N_nonempty_type_kind : (Parsetree.type_kind * Asttypes.private_flag * Parsetree.core_type option) nonterminal
       | N_nonempty_list_raw_string_ : (string list) nonterminal
       | N_nonempty_list_mkrhs_LIDENT__ : (string Location.loc list) nonterminal
@@ -44177,9 +44177,9 @@ module MenhirInterpreter = struct
       | N_list_attribute_ : (Parsetree.attributes) nonterminal
       | N_list_and_module_declaration_ : (Parsetree.module_declaration list) nonterminal
       | N_list_and_module_binding_ : (Parsetree.module_binding list) nonterminal
-      | N_list_and_class_type_declaration_ : (Parsetree.class_type_declaration list) nonterminal
-      | N_list_and_class_description_ : (Parsetree.class_description list) nonterminal
-      | N_list_and_class_declaration_ : (Parsetree.class_declaration list) nonterminal
+      | N_list_and_class_type_declaration_ : (Parsetree.class_type Parsetree.class_infos list) nonterminal
+      | N_list_and_class_description_ : (Parsetree.class_type Parsetree.class_infos list) nonterminal
+      | N_list_and_class_declaration_ : (Parsetree.class_expr Parsetree.class_infos list) nonterminal
       | N_letop_bindings : (Parsetree.pattern * Parsetree.expression * Parsetree.binding_op list) nonterminal
       | N_letop_binding_body : (Parsetree.pattern * Parsetree.expression) nonterminal
       | N_let_pattern : (Parsetree.pattern) nonterminal
@@ -44202,12 +44202,12 @@ module MenhirInterpreter = struct
   Parsetree.type_declaration) nonterminal
       | N_generic_type_declaration_no_nonrec_flag_type_subst_kind_ : ((Asttypes.rec_flag * string Location.loc option) *
   Parsetree.type_declaration) nonterminal
-      | N_generic_constructor_declaration_epsilon_ : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) nonterminal
-      | N_generic_constructor_declaration_BAR_ : (Ast_helper.str * Parsetree.constructor_arguments *
-  Parsetree.core_type option * Parsetree.attributes * Location.t *
-  Docstrings.info) nonterminal
+      | N_generic_constructor_declaration_epsilon_ : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) nonterminal
+      | N_generic_constructor_declaration_BAR_ : (Merlin_parsing.Ast_helper.str * Parsetree.constructor_arguments *
+  Parsetree.core_type option * Parsetree.attributes * Warnings.loc *
+  Merlin_parsing.Docstrings.info) nonterminal
       | N_generalized_constructor_arguments : (Parsetree.constructor_arguments * Parsetree.core_type option) nonterminal
       | N_functor_args : ((Lexing.position * Parsetree.functor_parameter) list) nonterminal
       | N_functor_arg : (Lexing.position * Parsetree.functor_parameter) nonterminal
