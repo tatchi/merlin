@@ -5,7 +5,7 @@
  (name merlin_kernel)
  (public_name merlin.kernel)
  (wrapped false)
- (flags -open Merlin_utils -open Utils -open Merlin_parsing)
+ (flags -open Merlin_utils -open Utils -open Merlin_parsing -open Typing)
  (libraries config os_ipc merlin_parsing preprocess typing utils
             merlin_extend merlin_specific merlin_utils merlin_dot_protocol))
 

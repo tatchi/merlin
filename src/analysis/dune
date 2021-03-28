@@ -1,6 +1,6 @@
 (library
  (name merlin_analysis)
- (flags -open Merlin_utils -open Merlin_parsing)
+ (flags -open Merlin_utils -open Merlin_parsing -open Typing)
  (public_name merlin.analysis)
  (libraries
   config
