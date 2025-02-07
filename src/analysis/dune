@@ -3,14 +3,24 @@
  (public_name merlin-lib.analysis)
  (flags
   :standard
-  -open Ocaml_utils
-  -open Ocaml_parsing
-  -open Ocaml_preprocess
-  -open Ocaml_typing
-  -open Merlin_utils
-  -open Merlin_specific
-  -open Merlin_extend
-  -open Merlin_kernel)
+  -w
+  -37
+  -open
+  Ocaml_utils
+  -open
+  Ocaml_parsing
+  -open
+  Ocaml_preprocess
+  -open
+  Ocaml_typing
+  -open
+  Merlin_utils
+  -open
+  Merlin_specific
+  -open
+  Merlin_extend
+  -open
+  Merlin_kernel)
  (libraries
   merlin_config
   merlin_specific

@@ -1,0 +1,24 @@
+# 32.11 locate - find_source
+attempt to find "state.mli"
+# 32.11 locate - find_source
+fname = "state.mli"; with_fallback = false
+# 32.11 locate - find_source
+filename = "State"; filename = state.mli; initial_path
+# 32.11 locate - find_source
+dir1 = "."
+# 32.11 locate - find_source
+dir2 = "/Users/corentin/Dev/ocaml-lsp/ocaml-lsp-server/src"
+# 32.11 locate - find_source(State)
+multiple matches in the source path : /Users/corentin/Dev/ocaml-lsp/_opam/lib/stdune/state.mli , /Users/corentin/Dev/ocaml-lsp/ocaml-lsp-server/src/state.mli
+# 32.11 locate - find_source
+... no source digest available to select the right one
+# 32.11 locate - find_source
+not found 2
+# 32.11 locate - find_source
+... using heuristic to select the right one
+# 32.11 locate - find_source
+we are looking for a file named state.mli in /Users/corentin/Dev/ocaml-lsp/ocaml-lsp-server/src
+# 32.11 locate - find_source
+source = found /Users/corentin/Dev/ocaml-lsp/ocaml-lsp-server/src/state.mli = 
+# 32.11 locate - find_source
+file exist = true
