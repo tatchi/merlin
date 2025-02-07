@@ -25,7 +25,13 @@ Locate fails to find the source if it is not promoted:
   $ $MERLIN single locate -look-for ml -position 1:52 -filename main.ml <main.ml
   {
     "class": "return",
-    "value": "'Client.x' seems to originate from 'Client' whose ML file could not be found",
+    "value": {
+      "file": "$TESTCASE_ROOT/_build/default/client.ml",
+      "pos": {
+        "line": 1,
+        "col": 4
+      }
+    },
     "notifications": []
   }
 

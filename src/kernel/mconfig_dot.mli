@@ -70,6 +70,8 @@ type context
 
 val get_config : context -> string -> config * string list
 
+val get_process_dir : context -> string
+
 (** [find_project_config dir] searches for a "project configuration file" in dir
     and its parent directories. Stopping on the first one it finds and returning
     a configuration context along with the path to the configuration file,

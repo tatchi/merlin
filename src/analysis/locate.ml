@@ -494,7 +494,21 @@ let find_source ~config loc =
       | Some source -> Found source
       | None -> (
         log ~title:"find_source" "Trying to find %S in %S directly" fname dir;
-        try Found (Misc.find_in_path [ dir ] fname) with _ -> Not_found file)
+        try Found (Misc.find_in_path [ dir ] fname)
+        with _ -> (
+          log ~title:"find_source"
+            "%S not found in %S. Trying within _build/default folder" fname dir;
+          match Mconfig_dot.find_project_context dir with
+          | None -> Not_found file
+          | Some (t, _) ->
+            let source_in_build =
+              let process_dir = Mconfig_dot.get_process_dir t in
+              Filename.concat process_dir
+                (Printf.sprintf "_build/default/%s" fname)
+            in
+            log ~title:"find_source" "source_in_build = %s" source_in_build;
+            if Sys.file_exists source_in_build then Found source_in_build
+            else Not_found file))
     end
   | [ x ] -> Found x
   | files -> (

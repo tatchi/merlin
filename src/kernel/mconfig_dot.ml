@@ -283,6 +283,8 @@ type context =
 
 exception End_of_input
 
+let get_process_dir { process_dir; _ } = process_dir
+
 let get_config { workdir; process_dir; configurator } path_abs =
   let log_query path =
     log ~title:"get_config"
